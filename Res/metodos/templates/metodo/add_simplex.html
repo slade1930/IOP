@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}Nuevo Cálculo Simplex{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+    <div class="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-4">
+        <h1 class="text-2xl font-bold text-white">Nuevo Cálculo Simplex</h1>
+        <p class="text-blue-100 mt-1">Ingresa los datos del problema de programación lineal</p>
+    </div>
+    
+    <form method="post" class="p-6 space-y-6">
+        {% csrf_token %}
+        
+        {% if form.errors %}
+        <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
+            <div class="flex items-start">
+                <div class="flex-shrink-0 pt-0.5">
+                    <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-red-800">
+                        Error en el formulario
+                    </h3>
+                    <div class="mt-2 text-sm text-red-700">
+                        <ul class="list-disc pl-5 space-y-1">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li><span class="font-semibold">{{ field.label }}:</span> {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Tipo de Problema -->
+        <div class="grid md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Problema</label>
+                <div class="mt-1 relative rounded-md shadow-sm">
+                    {{ form.tipo_problema }}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Función Objetivo -->
+        <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+            <h2 class="text-lg font-medium text-blue-800 mb-3">Función Objetivo</h2>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Coeficientes</label>
+                <div class="mt-1 relative rounded-md shadow-sm">
+                    {{ form.coef_objetivo }}
+                </div>
+                <p class="mt-2 text-sm text-blue-600">
+                    <i class="fas fa-info-circle mr-1"></i> Ingresa los coeficientes separados por comas. Ejemplo: <span class="font-mono bg-blue-100 px-2 py-1 rounded">3,5,2</span> para Z = 3x₁ + 5x₂ + 2x₃
+                </p>
+            </div>
+        </div>
+        
+        <!-- Restricciones -->
+        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <h2 class="text-lg font-medium text-gray-800 mb-3">Restricciones</h2>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Matriz de restricciones</label>
+                <div class="mt-1">
+                    {{ form.matriz_restricciones }}
+                </div>
+                <p class="mt-2 text-sm text-gray-600">
+                    <i class="fas fa-info-circle mr-1"></i> Una restricción por línea. Formato: <span class="font-mono bg-gray-100 px-2 py-1 rounded">coef_x1,coef_x2,desigualdad,valor</span>. Ejemplo: <span class="font-mono bg-gray-100 px-2 py-1 rounded">1,2,<=,5</span> para x₁ + 2x₂ ≤ 5
+                </p>
+            </div>
+        </div>
+        
+        <!-- Vector b y Desigualdades -->
+        <div class="grid md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Vector b (lado derecho)</label>
+                <div class="mt-1 relative rounded-md shadow-sm">
+                    {{ form.vector_b }}
+                </div>
+                <p class="mt-2 text-sm text-gray-500">Valores separados por comas</p>
+            </div>
+        </div>
+        
+        <!-- Botones -->
+        <div class="flex justify-end space-x-4 pt-4 border-t border-gray-200">
+            <a href="{% url 'list_simplex' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <i class="fas fa-times mr-2"></i> Cancelar
+            </a>
+            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <i class="fas fa-calculator mr-2"></i> Calcular
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+    textarea {
+        min-height: 120px;
+    }
+</style>
+{% endblock %}

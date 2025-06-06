@@ -1,0 +1,19 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Entorno virtual
+ent/
+
+# Archivos de logs
+*.log
+
+# Archivos de configuración sensibles
+.env
+
+# Archivos de VS Code
+.vscode/
+
+# Archivos estáticos
+/static/
