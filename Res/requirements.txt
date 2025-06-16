@@ -8,3 +8,4 @@ drf-spectacular==0.28.0
 django-extensions==4.1
 numpy==2.2.5
 matplotlib==3.10.3
+sympy==1.14.0

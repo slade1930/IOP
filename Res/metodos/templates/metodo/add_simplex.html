@@ -1,107 +1,157 @@
 {% extends 'base.html' %}
-
-{% block title %}Nuevo Cálculo Simplex{% endblock %}
+{% load static %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
-    <div class="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-4">
-        <h1 class="text-2xl font-bold text-white">Nuevo Cálculo Simplex</h1>
-        <p class="text-blue-100 mt-1">Ingresa los datos del problema de programación lineal</p>
-    </div>
-    
-    <form method="post" class="p-6 space-y-6">
-        {% csrf_token %}
-        
-        {% if form.errors %}
-        <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
-            <div class="flex items-start">
-                <div class="flex-shrink-0 pt-0.5">
-                    <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                    </svg>
-                </div>
-                <div class="ml-3">
-                    <h3 class="text-sm font-medium text-red-800">
-                        Error en el formulario
-                    </h3>
-                    <div class="mt-2 text-sm text-red-700">
-                        <ul class="list-disc pl-5 space-y-1">
-                            {% for field in form %}
-                                {% for error in field.errors %}
-                                    <li><span class="font-semibold">{{ field.label }}:</span> {{ error }}</li>
-                                {% endfor %}
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
+<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-3xl mx-auto">
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+      <div class="bg-blue-600 px-6 py-4">
+        <h2 class="text-2xl font-bold text-white text-center">Nuevo Problema de Programación Lineal</h2>
+      </div>
+      
+      <div class="px-6 py-8">
+        <form method="post" class="space-y-6" novalidate>
+          {% csrf_token %}
+          
+          {% if form.non_field_errors %}
+          <div class="bg-red-50 border-l-4 border-red-500 p-4">
+            {% for error in form.non_field_errors %}
+              <p class="text-red-700">{{ error }}</p>
+            {% endfor %}
+          </div>
+          {% endif %}
+          
+          <!-- Función Objetivo -->
+          <div>
+            <label for="{{ form.objetivo.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+              Función Objetivo
+            </label>
+            <div class="mt-1 relative rounded-md shadow-sm">
+              {{ form.objetivo }}
             </div>
-        </div>
-        {% endif %}
-        
-        <!-- Tipo de Problema -->
-        <div class="grid md:grid-cols-2 gap-6">
+            <p class="mt-1 text-sm text-gray-500">{{ form.objetivo.help_text }}</p>
+            {% for error in form.objetivo.errors %}
+              <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Tipo de Optimización -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Problema</label>
-                <div class="mt-1 relative rounded-md shadow-sm">
-                    {{ form.tipo_problema }}
-                </div>
+              <label for="{{ form.tipo_optimizacion.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                Tipo de Optimización
+              </label>
+              <div class="mt-1">
+                {{ form.tipo_optimizacion }}
+              </div>
             </div>
-        </div>
-        
-        <!-- Función Objetivo -->
-        <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
-            <h2 class="text-lg font-medium text-blue-800 mb-3">Función Objetivo</h2>
+            
+            <!-- Variables de Decisión -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Coeficientes</label>
-                <div class="mt-1 relative rounded-md shadow-sm">
-                    {{ form.coef_objetivo }}
-                </div>
-                <p class="mt-2 text-sm text-blue-600">
-                    <i class="fas fa-info-circle mr-1"></i> Ingresa los coeficientes separados por comas. Ejemplo: <span class="font-mono bg-blue-100 px-2 py-1 rounded">3,5,2</span> para Z = 3x₁ + 5x₂ + 2x₃
-                </p>
+              <label for="{{ form.variables_decision.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                Número de Variables
+              </label>
+              <div class="mt-1">
+                {{ form.variables_decision }}
+              </div>
+              <p class="mt-1 text-sm text-gray-500">{{ form.variables_decision.help_text }}</p>
+              {% for error in form.variables_decision.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+              {% endfor %}
             </div>
-        </div>
-        
-        <!-- Restricciones -->
-        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <h2 class="text-lg font-medium text-gray-800 mb-3">Restricciones</h2>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Matriz de restricciones</label>
-                <div class="mt-1">
-                    {{ form.matriz_restricciones }}
-                </div>
-                <p class="mt-2 text-sm text-gray-600">
-                    <i class="fas fa-info-circle mr-1"></i> Una restricción por línea. Formato: <span class="font-mono bg-gray-100 px-2 py-1 rounded">coef_x1,coef_x2,desigualdad,valor</span>. Ejemplo: <span class="font-mono bg-gray-100 px-2 py-1 rounded">1,2,<=,5</span> para x₁ + 2x₂ ≤ 5
-                </p>
+          </div>
+          
+          <!-- Restricciones -->
+          <div>
+            <label for="{{ form.restricciones.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+              Restricciones
+            </label>
+            <div class="mt-1">
+              {{ form.restricciones }}
             </div>
-        </div>
-        
-        <!-- Vector b y Desigualdades -->
-        <div class="grid md:grid-cols-2 gap-6">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Vector b (lado derecho)</label>
-                <div class="mt-1 relative rounded-md shadow-sm">
-                    {{ form.vector_b }}
-                </div>
-                <p class="mt-2 text-sm text-gray-500">Valores separados por comas</p>
-            </div>
-        </div>
-        
-        <!-- Botones -->
-        <div class="flex justify-end space-x-4 pt-4 border-t border-gray-200">
-            <a href="{% url 'list_simplex' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                <i class="fas fa-times mr-2"></i> Cancelar
-            </a>
-            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                <i class="fas fa-calculator mr-2"></i> Calcular
+            <p class="mt-1 text-sm text-gray-500">{{ form.restricciones.help_text }}</p>
+            {% for error in form.restricciones.errors %}
+              <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
+          </div>
+          
+          <!-- Configuraciones Avanzadas -->
+          <div class="pt-2">
+            <button type="button" @click="advancedOpen = !advancedOpen" 
+                    class="flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium">
+              <span>Configuraciones Avanzadas</span>
+              <svg :class="{'rotate-180': advancedOpen}" class="ml-2 h-5 w-5 transform transition-transform" 
+                   xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
             </button>
-        </div>
-    </form>
+            
+            <div x-show="advancedOpen" x-transition class="mt-4 space-y-6 border-t pt-4">
+              <!-- Tolerancia -->
+              <div>
+                <label for="{{ form.tolerancia.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                  Tolerancia
+                </label>
+                <div class="mt-1">
+                  {{ form.tolerancia }}
+                </div>
+                <p class="mt-1 text-sm text-gray-500">{{ form.tolerancia.help_text }}</p>
+                {% for error in form.tolerancia.errors %}
+                  <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                {% endfor %}
+              </div>
+              
+              <!-- Máximo de Iteraciones -->
+              <div>
+                <label for="{{ form.max_iteraciones.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                  Máximo de Iteraciones
+                </label>
+                <div class="mt-1">
+                  {{ form.max_iteraciones }}
+                </div>
+                <p class="mt-1 text-sm text-gray-500">{{ form.max_iteraciones.help_text }}</p>
+                {% for error in form.max_iteraciones.errors %}
+                  <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          
+          <div class="pt-4">
+            <button type="submit" 
+                    class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+              Resolver Problema
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
+{% endblock %}
 
-<style>
-    textarea {
-        min-height: 120px;
+{% block scripts %}
+<script>
+document.addEventListener('alpine:init', () => {
+  Alpine.data('form', () => ({
+    advancedOpen: false,
+    examples: [
+      {name: 'Ejemplo 2D', value: '3x1 + 2x2'},
+      {name: 'Ejemplo 3D', value: '2x1 + 4x2 - 3x3'}
+    ],
+    insertExample(example) {
+      document.getElementById('{{ form.objetivo.id_for_label }}').value = example;
     }
-</style>
+  }));
+  
+  // Validación en tiempo real
+  const objetivoInput = document.getElementById('{{ form.objetivo.id_for_label }}');
+  objetivoInput.addEventListener('input', function() {
+    this.value = this.value.replace(/[^0-9xX\+\-\*\/\.\s]/g, '');
+  });
+});
+</script>
 {% endblock %}
