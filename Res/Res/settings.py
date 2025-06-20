@@ -13,7 +13,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 import environ
+from dotenv import load_dotenv
 
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
@@ -25,6 +27,9 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-8819@x4tc)$yy9dnwm6%uv-_$y!1mpb&-w(*1#*40g^8gxp*c2"
+
+# Leer la API Key de OpenAI
+OPENAI_API_KEY = env("OPENAI_API_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

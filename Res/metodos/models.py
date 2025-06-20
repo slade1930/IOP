@@ -97,6 +97,11 @@ class ProblemaSimplex(models.Model):
         null=True,
         help_text="Todos los pasos intermedios del método Simplex",
     )
+    explicacion_chatgpt = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Explicación generada automáticamente por ChatGPT del procedimiento simplex",
+    )
     creado = models.DateTimeField(auto_now_add=True)
     actualizado = models.DateTimeField(auto_now=True)
 
