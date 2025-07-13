@@ -1,0 +1,193 @@
+/* Estilos base mejorados */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --galaxy-colors: #4F46E5, #10B981, #3B82F6, #EF4444, #F59E0B, #8B5CF6;
+}
+
+body {
+    font-family: 'Space Grotesk', sans-serif;
+    overflow: hidden;
+}
+
+#universe-container {
+    perspective: 2000px;
+    background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+}
+
+/* Efecto de partículas mejorado */
+.particle {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(0.5px);
+    animation: float infinite alternate;
+}
+
+@keyframes float {
+    0% { transform: translateY(0) translateX(0); }
+    100% { transform: translateY(-20px) translateX(10px); }
+}
+
+/* Galaxias premium */
+.galaxy {
+    position: absolute;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 5;
+    filter: drop-shadow(0 0 15px currentColor);
+    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.galaxy:hover {
+    filter: drop-shadow(0 0 25px currentColor) brightness(1.2);
+}
+
+.galaxy-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: rotate-galaxy 120s linear infinite;
+}
+
+@keyframes rotate-galaxy {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.galaxy-core {
+    width: 35%;
+    height: 35%;
+    border-radius: 50%;
+    position: absolute;
+    filter: blur(2px);
+    box-shadow: 0 0 30px 10px currentColor;
+    z-index: 2;
+}
+
+.galaxy-arm {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(1px);
+    opacity: 0.9;
+    z-index: 1;
+    animation: pulse-arm 4s infinite alternate;
+}
+
+@keyframes pulse-arm {
+    0% { opacity: 0.7; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.1); }
+}
+
+/* Hoyo negro mejorado */
+#black-hole {
+    transition: all 1s ease-out;
+}
+
+.black-hole-core {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #000000 0%, #4F46E5 70%);
+    box-shadow: 0 0 60px 30px rgba(79, 70, 229, 0.6);
+    animation: black-hole-pulse 4s infinite alternate;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.black-hole-core::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        transparent 0deg,
+        transparent 90deg,
+        rgba(79, 70, 229, 0.8) 90deg,
+        rgba(79, 70, 229, 0.8) 180deg,
+        transparent 180deg,
+        transparent 270deg,
+        rgba(79, 70, 229, 0.8) 270deg
+    );
+    animation: rotate 8s linear infinite;
+    z-index: -1;
+}
+
+@keyframes black-hole-pulse {
+    0% { transform: scale(1); box-shadow: 0 0 60px 30px rgba(79, 70, 229, 0.6); }
+    50% { transform: scale(1.05); box-shadow: 0 0 80px 40px rgba(79, 70, 229, 0.8); }
+    100% { transform: scale(1); box-shadow: 0 0 60px 30px rgba(79, 70, 229, 0.6); }
+}
+
+/* Panel de información premium */
+#info-panel {
+    backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.85);
+    opacity: 0;
+    transition: opacity 1s ease, backdrop-filter 1s ease;
+}
+
+.info-panel-visible {
+    opacity: 1 !important;
+}
+
+.info-content {
+    background: linear-gradient(145deg, #111827, #1E293B);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transform: scale(0.9);
+    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.info-content-visible {
+    transform: scale(1) !important;
+}
+
+/* Efectos de transición */
+.zoom-effect {
+    transition: all 1.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(79, 70, 229, 0.6);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(79, 70, 229, 0.8);
+}

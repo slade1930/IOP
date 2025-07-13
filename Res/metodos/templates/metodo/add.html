@@ -1,0 +1,427 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nuevo Cálculo - ROW{% endblock %}
+
+{% block extra_head %}
+<style>
+    .font-mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        background-color: #fff;
+        color: #374151;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    input:focus, select:focus {
+        outline: none;
+        border-color: #4F46E5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    #id_funcion {
+        padding-left: 4.5rem;
+    }
+
+    .error input, .error select {
+        border-color: #ef4444;
+    }
+    
+    /* Estilos para el fondo cósmico */
+    .cosmic-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+    }
+    
+    .cosmic-particle {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.5);
+    }
+    
+    .cosmic-nebula {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(60px);
+        opacity: 0.15;
+    }
+    
+    .content-wrapper {
+        position: relative;
+        z-index: 1;
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(10px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Fondo cósmico animado -->
+<div class="cosmic-bg" id="cosmicBackground"></div>
+
+<div class="content-wrapper min-h-screen">
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Advertencia simplificada para usuarios no autenticados -->
+        {% if not user.is_authenticated %}
+        <div class="bg-yellow-900/20 border-l-4 border-yellow-400 p-3 mb-6 rounded-lg flex items-start text-yellow-200">
+            <i class="fas fa-exclamation-circle text-yellow-400 mr-2 mt-0.5"></i>
+            <p class="text-sm">
+                <strong>Límite:</strong> Máximo 3 cálculos en modo anónimo. 
+                <a href="{% url 'register' %}" class="font-medium underline hover:text-yellow-300">Regístrate</a> para guardar tu historial.
+            </p>
+        </div>
+        {% endif %}
+
+        <div class="flex flex-col md:flex-row gap-8">
+            <!-- Formulario principal -->
+            <div class="md:w-2/3">
+                <div class="bg-gray-800/70 rounded-xl shadow-lg overflow-hidden border border-gray-700 backdrop-blur-sm">
+                    <div class="bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-4">
+                        <h2 class="text-2xl font-bold text-white">Método de Falsa Posición</h2>
+                        <p class="text-blue-100">Ingrese los parámetros para el cálculo numérico</p>
+                    </div>
+
+                    <form method="post" class="p-6 space-y-6" id="calculation-form">
+                        {% csrf_token %}
+
+                        <!-- Nombre del cálculo -->
+                        <div>
+                            <label for="{{ form.nombre.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1">
+                                Nombre del cálculo {% if form.nombre.field.required %}<span class="text-red-400">*</span>{% endif %}
+                            </label>
+                            <input type="text" name="{{ form.nombre.name }}" id="{{ form.nombre.id_for_label }}" 
+                                   class="w-full bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                   value="{{ form.nombre.value|default_if_none:'' }}">
+                            {% if form.nombre.errors %}
+                                <div class="mt-1 text-sm text-red-400">
+                                    {{ form.nombre.errors }}
+                                </div>
+                            {% endif %}
+                            <p class="mt-1 text-xs text-gray-400">Puedes usar un nombre para identificar este cálculo (opcional)</p>
+                        </div>
+                        
+                        <!-- Campo Función -->
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label for="{{ form.funcion.id_for_label }}" class="block text-sm font-medium text-gray-300">
+                                    Función Matemática <span class="text-red-400">*</span>
+                                </label>
+                                <button type="button" id="show-examples" class="text-xs text-purple-300 hover:text-purple-100 hover:underline focus:outline-none">
+                                    Ver ejemplos
+                                </button>
+                            </div>
+                            <div class="relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-400">f(x) =</span>
+                                </div>
+                                <input type="text" name="{{ form.funcion.name }}" id="{{ form.funcion.id_for_label }}" 
+                                       class="w-full bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 pl-14 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                       value="{{ form.funcion.value|default_if_none:'' }}">
+                            </div>
+                            <div class="flex justify-between">
+                                <p class="mt-1 text-xs text-gray-400">
+                                    Use <span class="font-mono text-purple-300">x</span> como variable. Operadores: + - * / **
+                                </p>
+                                <button type="button" id="validate-function" class="text-xs text-purple-300 hover:text-purple-100 hover:underline focus:outline-none">
+                                    Validar función
+                                </button>
+                            </div>
+                            {% if form.funcion.errors %}
+                                <div class="mt-1 text-sm text-red-400">
+                                    {{ form.funcion.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Intervalos -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Límite Inferior (x0) -->
+                            <div>
+                                <label for="{{ form.x0.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1">
+                                    Límite Inferior (x₀) <span class="text-red-400">*</span>
+                                </label>
+                                <input type="number" step="any" name="{{ form.x0.name }}" id="{{ form.x0.id_for_label }}" 
+                                       class="w-full bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                       value="{{ form.x0.value|default_if_none:'' }}">
+                                {% if form.x0.errors %}
+                                    <div class="mt-1 text-sm text-red-400">
+                                        {{ form.x0.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Límite Superior (x1) -->
+                            <div>
+                                <label for="{{ form.x1.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1">
+                                    Límite Superior (x₁) <span class="text-red-400">*</span>
+                                </label>
+                                <input type="number" step="any" name="{{ form.x1.name }}" id="{{ form.x1.id_for_label }}" 
+                                       class="w-full bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                       value="{{ form.x1.value|default_if_none:'' }}">
+                                {% if form.x1.errors %}
+                                    <div class="mt-1 text-sm text-red-400">
+                                        {{ form.x1.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Parámetros -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Tolerancia -->
+                            <div>
+                                <label for="{{ form.tolerancia.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1">
+                                    Tolerancia (ε)
+                                </label>
+                                <div class="relative rounded-md shadow-sm">
+                                    <input type="number" step="any" name="{{ form.tolerancia.name }}" id="{{ form.tolerancia.id_for_label }}" 
+                                           class="w-full bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                           value="{{ form.tolerancia.value|default_if_none:'0.0001' }}">
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-400">≥ 0</span>
+                                    </div>
+                                </div>
+                                <p class="mt-1 text-xs text-gray-400">Precisión deseada (default: 0.0001)</p>
+                                {% if form.tolerancia.errors %}
+                                    <div class="mt-1 text-sm text-red-400">
+                                        {{ form.tolerancia.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Máx Iteraciones -->
+                            <div>
+                                <label for="{{ form.max_iteraciones.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1">
+                                    Máx. Iteraciones
+                                </label>
+                                <input type="number" name="{{ form.max_iteraciones.name }}" id="{{ form.max_iteraciones.id_for_label }}" 
+                                       class="w-full bg-gray-700 text-white border border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                       value="{{ form.max_iteraciones.value|default_if_none:'100' }}">
+                                <p class="mt-1 text-xs text-gray-400">Número máximo de iteraciones (default: 100)</p>
+                                {% if form.max_iteraciones.errors %}
+                                    <div class="mt-1 text-sm text-red-400">
+                                        {{ form.max_iteraciones.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="flex justify-between pt-6 border-t border-gray-700">
+                            <a href="{% url 'list_falsa_posicion' %}" class="px-4 py-2 border border-gray-600 rounded-md text-gray-300 bg-gray-700 hover:bg-gray-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors">
+                                <i class="fas fa-arrow-left mr-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="px-6 py-2 border border-transparent rounded-md shadow-sm text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all">
+                                <i class="fas fa-calculator mr-2"></i>Calcular
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Panel de ayuda -->
+            <div class="md:w-1/3">
+                <div class="bg-gray-800/70 rounded-xl shadow-lg overflow-hidden border border-gray-700 backdrop-blur-sm sticky top-4">
+                    <div class="bg-gray-900 text-white px-6 py-4 border-b border-gray-700">
+                        <h3 class="text-lg font-semibold flex items-center">
+                            <i class="fas fa-question-circle mr-2 text-purple-400"></i> Ayuda
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-6">
+                            <!-- Ejemplos (inicialmente ocultos) -->
+                            <div id="examples-panel" class="hidden">
+                                <h4 class="font-medium text-gray-300 mb-3">Ejemplos de funciones</h4>
+                                <ul class="space-y-2">
+                                    <li>
+                                        <button type="button" class="example-btn text-left w-full text-sm text-purple-300 hover:text-purple-100 hover:underline" data-example="x**3 - x - 2">
+                                            x³ - x - 2
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button" class="example-btn text-left w-full text-sm text-purple-300 hover:text-purple-100 hover:underline" data-example="cos(x) - x">
+                                            cos(x) - x
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button" class="example-btn text-left w-full text-sm text-purple-300 hover:text-purple-100 hover:underline" data-example="exp(x) - 3*x">
+                                            eˣ - 3x
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button" class="example-btn text-left w-full text-sm text-purple-300 hover:text-purple-100 hover:underline" data-example="log(x) - 1">
+                                            ln(x) - 1
+                                        </button>
+                                    </li>
+                                </ul>
+                                <hr class="my-4 border-gray-700">
+                            </div>
+                            
+                            <!-- Instrucciones -->
+                            <div>
+                                <h4 class="font-medium text-gray-300 mb-3">Instrucciones</h4>
+                                <ol class="space-y-3 text-sm text-gray-400">
+                                    <li class="flex items-start">
+                                        <span class="bg-purple-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 flex-shrink-0">1</span>
+                                        <span>Ingresa una función continua f(x)</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="bg-purple-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 flex-shrink-0">2</span>
+                                        <span>Define un intervalo [x₀, x₁] donde f(x₀) y f(x₁) tengan signos opuestos</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="bg-purple-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 flex-shrink-0">3</span>
+                                        <span>Especifica la tolerancia y máximo de iteraciones</span>
+                                    </li>
+                                </ol>
+                            </div>
+                            
+                            <!-- Validación -->
+                            <div id="validation-result" class="hidden">
+                                <h4 class="font-medium text-gray-300 mb-3">Validación</h4>
+                                <div class="p-3 rounded-lg bg-green-900/30 text-sm text-green-300 flex items-start border border-green-800">
+                                    <i class="fas fa-check-circle mr-2 mt-0.5 text-green-400"></i>
+                                    <span id="validation-message">La función es válida</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Teoría -->
+                            <div>
+                                <h4 class="font-medium text-gray-300 mb-3">Sobre el método</h4>
+                                <p class="text-sm text-gray-400">
+                                    El método de falsa posición combina las ideas de bisección y secante para encontrar raíces de funciones de manera eficiente.
+                                </p>
+                            </div>
+
+                            <!-- Mensaje para usuarios no autenticados -->
+                            {% if not user.is_authenticated %}
+                            <div class="p-3 rounded-lg bg-blue-900/30 text-sm text-blue-200 border border-blue-800">
+                                <div class="flex items-start">
+                                    <i class="fas fa-info-circle mr-2 mt-0.5 text-blue-400"></i>
+                                    <div>
+                                        <p>Regístrate para:</p>
+                                        <ul class="list-disc list-inside mt-1">
+                                            <li>Guardar tu historial</li>
+                                            <li>Acceso ilimitado</li>
+                                            <li>Exportar resultados</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para el fondo cósmico animado -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Crear fondo cósmico
+        const cosmicBg = document.getElementById('cosmicBackground');
+        
+        // Crear nebulosas
+        const colors = ['rgba(139, 92, 246, 0.15)', 'rgba(59, 130, 246, 0.15)', 'rgba(236, 72, 153, 0.15)'];
+        for (let i = 0; i < 3; i++) {
+            const nebula = document.createElement('div');
+            nebula.className = 'cosmic-nebula';
+            nebula.style.background = colors[i];
+            nebula.style.width = `${Math.random() * 400 + 200}px`;
+            nebula.style.height = nebula.style.width;
+            nebula.style.left = `${Math.random() * 100}%`;
+            nebula.style.top = `${Math.random() * 100}%`;
+            cosmicBg.appendChild(nebula);
+            
+            // Animación nebulosa
+            animateNebula(nebula);
+        }
+        
+        // Crear partículas estelares
+        for (let i = 0; i < 100; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'cosmic-particle';
+            particle.style.width = `${Math.random() * 3 + 1}px`;
+            particle.style.height = particle.style.width;
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 100}%`;
+            particle.style.opacity = Math.random() * 0.5 + 0.1;
+            cosmicBg.appendChild(particle);
+            
+            // Animación partícula
+            animateParticle(particle);
+        }
+        
+        function animateNebula(element) {
+            let x = parseFloat(element.style.left);
+            let y = parseFloat(element.style.top);
+            let xSpeed = (Math.random() - 0.5) * 0.02;
+            let ySpeed = (Math.random() - 0.5) * 0.02;
+            
+            function move() {
+                x += xSpeed;
+                y += ySpeed;
+                
+                // Rebotar en los bordes
+                if (x < -20 || x > 100) xSpeed *= -1;
+                if (y < -20 || y > 100) ySpeed *= -1;
+                
+                element.style.left = `${x}%`;
+                element.style.top = `${y}%`;
+                
+                requestAnimationFrame(move);
+            }
+            
+            move();
+        }
+        
+        function animateParticle(element) {
+            let x = parseFloat(element.style.left);
+            let y = parseFloat(element.style.top);
+            let xSpeed = (Math.random() - 0.5) * 0.1;
+            let ySpeed = (Math.random() - 0.5) * 0.1;
+            let opacityDirection = Math.random() > 0.5 ? 0.01 : -0.01;
+            
+            function move() {
+                x += xSpeed;
+                y += ySpeed;
+                
+                // Rebotar en los bordes
+                if (x < 0 || x > 100) xSpeed *= -1;
+                if (y < 0 || y > 100) ySpeed *= -1;
+                
+                // Cambiar opacidad
+                let opacity = parseFloat(element.style.opacity);
+                opacity += opacityDirection;
+                if (opacity <= 0.1 || opacity >= 0.6) opacityDirection *= -1;
+                
+                element.style.left = `${x}%`;
+                element.style.top = `${y}%`;
+                element.style.opacity = opacity;
+                
+                requestAnimationFrame(move);
+            }
+            
+            move();
+        }
+    });
+</script>
+
+<script src="{% static 'metodo/js/add.js' %}"></script>
+{% endblock %}

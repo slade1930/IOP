@@ -1,5 +1,12 @@
 from rest_framework import serializers
-from .models import ProblemaSimplex
+from .models import (
+    ProblemaSimplex,
+    FalsaPosicion,
+    GaussEliminacion,
+    GaussJordan,
+    DiferenciacionFinita,
+    InterpolacionNewton,
+)
 
 
 class SimplexSerializer(serializers.ModelSerializer):
@@ -26,3 +33,33 @@ class SimplexSerializer(serializers.ModelSerializer):
             representation["tabla_final"] = instance.tabla_final
 
         return representation
+
+
+class FalsaPosicionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FalsaPosicion
+        fields = "__all__"
+
+
+class GaussEliminacionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GaussEliminacion
+        fields = "__all__"
+
+
+class GaussJordanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GaussJordan
+        fields = "__all__"
+
+
+class DiferenciacionFinitaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DiferenciacionFinita
+        fields = "__all__"
+
+
+class InterpolacionNewtonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InterpolacionNewton
+        fields = "__all__"

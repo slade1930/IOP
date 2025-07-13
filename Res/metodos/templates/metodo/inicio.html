@@ -2,330 +2,935 @@
 {% load static %}
 
 {% block content %}
-<!-- Video Background Section -->
-<section class="video-hero relative h-screen flex items-center justify-center overflow-hidden">
-  <!-- Video de fondo matemático -->
-  <video autoplay muted loop class="absolute z-0 w-auto min-w-full min-h-full max-w-none">
-    <source src="{% static 'metodo/video/v.mp4' %}" type="video/mp4">
-    <!-- Fallback image -->
-    <img src="{% static 'metodo/img/1.jpg' %}" alt="Fondo matemático" class="absolute inset-0 w-full h-full object-cover">
-  </video>
-  
-  <!-- Overlay oscuro -->
-  <div class="absolute inset-0 bg-black opacity-50 z-1"></div>
-  
-  <!-- Contenido principal -->
-  <div class="relative z-10 text-center px-4 max-w-6xl mx-auto">
-    <h1 class="text-5xl md:text-7xl font-bold mb-6 text-white animate-fade-in-down">
-      <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-purple-300">MathOpt</span>
-    </h1>
-    <p class="text-xl md:text-2xl mb-8 text-blue-100 animate-fade-in-up">
-      Plataforma avanzada de investigación de operaciones con visualización matemática interactiva
-    </p>
+<div class="min-h-screen bg-gray-900 text-white overflow-hidden relative">
+    <!-- Fondo de estrellas -->
+    <div id="stars-container" class="fixed inset-0 z-0"></div>
     
-    <!-- Efecto de partículas matemáticas (canvas) -->
-    <canvas id="mathCanvas" class="absolute inset-0 z-0 opacity-30 pointer-events-none"></canvas>
-    
-    <div class="animate-fade-in-up delay-100">
-      <a href="{% url 'add_simplex' %}" class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 mr-4">
-        <i class="fas fa-play mr-3"></i> Comenzar ahora
-      </a>
-      <a href="#features" class="inline-flex items-center px-8 py-4 border-2 border-white text-white text-lg font-semibold rounded-lg hover:bg-white hover:text-blue-900 transition-all duration-300">
-        <i class="fas fa-chart-line mr-3"></i> Explorar herramientas
-      </a>
+    <!-- Nebulosas animadas -->
+    <div class="fixed inset-0 z-1 opacity-30">
+        <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-500 rounded-full filter blur-3xl opacity-50 animate-pulse animation-delay-1000"></div>
+        <div class="absolute top-1/3 right-1/3 w-96 h-96 bg-blue-500 rounded-full filter blur-3xl opacity-30 animate-pulse animation-delay-2000"></div>
+        <div class="absolute bottom-1/4 left-1/3 w-80 h-80 bg-pink-500 rounded-full filter blur-3xl opacity-40 animate-pulse"></div>
     </div>
     
-    <!-- Scroll indicator animado -->
-    <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-      <i class="fas fa-angle-down text-3xl text-white opacity-70"></i>
-    </div>
-  </div>
-</section>
-
-<!-- Features Section with Mathematical Visualizations -->
-<section id="features" class="py-20 bg-gradient-to-b from-gray-900 to-gray-800 text-white">
-  <div class="max-w-7xl mx-auto px-4">
-    <h2 class="text-3xl md:text-4xl font-bold text-center mb-16">
-      <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">Herramientas de Optimización</span>
-    </h2>
-    
-    <div class="grid md:grid-cols-3 gap-10">
-      <!-- Card 1 - Simplex -->
-      <div class="feature-card bg-gray-800 rounded-xl overflow-hidden shadow-2xl hover:shadow-purple-500/20 transition-all duration-500 transform hover:-translate-y-2">
-        <div class="relative h-48 bg-gray-700 overflow-hidden">
-          <img src="{% static 'metodo/img/2.jpg' %}" alt="Método Simplex" class="w-full h-full object-cover">
-          <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent"></div>
+    <!-- Contenido principal -->
+    <div class="relative z-10 container mx-auto px-4 py-16">
+        <!-- Encabezado con animación -->
+        <div class="text-center mb-16">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-blue-500 animate-gradient">
+                <span class="inline-block animate-float">A</span>
+                <span class="inline-block animate-float animation-delay-100">y</span>
+                <span class="inline-block animate-float animation-delay-200">z</span>
+                <span class="inline-block animate-float animation-delay-300">e</span>
+                <span class="inline-block animate-float animation-delay-400">x</span>
+            </h1>
+            
+            <!-- Subtítulo mejorado -->
+            <div class="relative inline-block mt-4">
+                <p class="text-xl md:text-2xl font-medium max-w-3xl mx-auto animate-fade-in bg-clip-text text-transparent bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300">
+                    <span class="text-stroke">Explora el poder de los métodos numéricos</span>
+                    <span class="block mt-2 text-glow">en un universo interactivo</span>
+                </p>
+                
+                <!-- Efecto de partículas alrededor del texto -->
+                <div class="absolute -top-4 -left-4 w-full h-full overflow-hidden pointer-events-none">
+                    <div class="particle absolute w-2 h-2 bg-purple-400 rounded-full opacity-70 animate-particle-1"></div>
+                    <div class="particle absolute w-1.5 h-1.5 bg-blue-400 rounded-full opacity-70 animate-particle-2"></div>
+                    <div class="particle absolute w-1 h-1 bg-pink-400 rounded-full opacity-70 animate-particle-3"></div>
+                </div>
+            </div>
         </div>
-        <div class="p-6">
-          <div class="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-2xl text-white mb-4 -mt-12 relative z-10 shadow-lg">
-            <i class="fas fa-calculator"></i>
-          </div>
-          <h3 class="text-2xl font-bold mb-3">Método Simplex</h3>
-          <p class="text-gray-300 mb-5">Resolución avanzada de problemas de programación lineal con visualización interactiva del algoritmo.</p>
-          <a href="{% url 'add_simplex' %}" class="inline-flex items-center text-blue-400 hover:text-blue-300 font-medium">
-            Probar ahora <i class="fas fa-arrow-right ml-2"></i>
-          </a>
-        </div>
-      </div>
-      
-      <!-- Card 2 - Otros Métodos -->
-      <div class="feature-card bg-gray-800 rounded-xl overflow-hidden shadow-2xl hover:shadow-green-500/20 transition-all duration-500 transform hover:-translate-y-2">
-        <div class="relative h-48 bg-gray-700 overflow-hidden">
-          <img src="{% static 'metodo/img/3.jpg' %}" alt="Métodos Matemáticos" class="w-full h-full object-cover">
-          <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent"></div>
-        </div>
-        <div class="p-6">
-          <div class="w-14 h-14 bg-green-600 rounded-full flex items-center justify-center text-2xl text-white mb-4 -mt-12 relative z-10 shadow-lg">
-            <i class="fas fa-project-diagram"></i>
-          </div>
-          <h3 class="text-2xl font-bold mb-3">Métodos Avanzados</h3>
-          <p class="text-gray-300 mb-5">Próximamente: Programación entera, optimización no lineal y análisis de sensibilidad.</p>
-          <button class="inline-flex items-center text-gray-500 font-medium cursor-not-allowed">
-            Próximamente <i class="fas fa-clock ml-2"></i>
-          </button>
-        </div>
-      </div>
-      
-      <!-- Card 3 - Historial -->
-      <div class="feature-card bg-gray-800 rounded-xl overflow-hidden shadow-2xl hover:shadow-purple-500/20 transition-all duration-500 transform hover:-translate-y-2">
-        <div class="relative h-48 bg-gray-700 overflow-hidden">
-          <img src="{% static 'metodo/img/4.jpg' %}" alt="Visualización de Datos" class="w-full h-full object-cover">
-          <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent"></div>
-        </div>
-        <div class="p-6">
-          <div class="w-14 h-14 bg-purple-600 rounded-full flex items-center justify-center text-2xl text-white mb-4 -mt-12 relative z-10 shadow-lg">
-            <i class="fas fa-history"></i>
-          </div>
-          <h3 class="text-2xl font-bold mb-3">Historial Inteligente</h3>
-          <p class="text-gray-300 mb-5">Analiza y compara tus cálculos anteriores con visualizaciones interactivas.</p>
-          <a href="{% url 'list_simplex' %}" class="inline-flex items-center text-purple-400 hover:text-purple-300 font-medium">
-            Ver historial <i class="fas fa-arrow-right ml-2"></i>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Mathematical Visualization Section -->
-<section class="py-20 bg-gray-100">
-  <div class="max-w-7xl mx-auto px-4">
-    <div class="grid md:grid-cols-2 gap-12 items-center">
-      <div>
-        <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6">Visualización Matemática Interactiva</h2>
-        <p class="text-lg text-gray-600 mb-8">Explora algoritmos de optimización a través de representaciones visuales dinámicas que te ayudarán a comprender mejor los conceptos matemáticos.</p>
         
-        <div class="space-y-6">
-          <div class="flex items-start">
-            <div class="flex-shrink-0 bg-blue-100 p-3 rounded-lg text-blue-600 mr-4">
-              <i class="fas fa-chart-line text-xl"></i>
+        <!-- Tarjetas de métodos con animaciones 3D -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            <!-- Método Simplex -->
+            <div class="method-card group" data-method="simplex" data-url="{% url 'list_simplex' %}">
+                <div class="card-inner">
+                    <div class="card-front bg-gradient-to-br from-indigo-600 to-purple-700 p-6 rounded-xl shadow-2xl flex flex-col h-full transform transition-all duration-500 group-hover:-translate-y-2">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold">Método Simplex</h3>
+                            <span class="icon-3d text-4xl">📊</span>
+                        </div>
+                        <p class="text-gray-200 flex-grow">Optimización lineal para encontrar la mejor solución en problemas con restricciones.</p>
+                        <div class="mt-4 text-sm text-indigo-200">Haz clic para explorar</div>
+                    </div>
+                    <div class="card-back absolute inset-0 bg-gray-800 p-6 rounded-xl shadow-2xl flex flex-col opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <h3 class="text-xl font-bold mb-3 text-indigo-300">Aplicaciones:</h3>
+                        <ul class="text-sm space-y-2">
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> Optimización de recursos en empresas
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> Planificación de rutas de transporte
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> Asignación óptima de presupuestos
+                            </li>
+                        </ul>
+                        <a href="{% url 'list_simplex' %}" class="mt-auto btn-glow bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg inline-block text-center transition-all duration-300 transform hover:scale-105">
+                            Probar calculadora
+                        </a>
+                    </div>
+                </div>
             </div>
-            <div>
-              <h3 class="text-xl font-semibold text-gray-800 mb-2">Gráficos Dinámicos</h3>
-              <p class="text-gray-600">Visualiza cómo evolucionan las soluciones en tiempo real durante el proceso de optimización.</p>
+            
+            <!-- Falsa Posición -->
+            <div class="method-card group" data-method="falsa-posicion" data-url="{% url 'list_falsa_posicion' %}">
+                <div class="card-inner">
+                    <div class="card-front bg-gradient-to-br from-blue-600 to-teal-500 p-6 rounded-xl shadow-2xl flex flex-col h-full transform transition-all duration-500 group-hover:-translate-y-2">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold">Falsa Posición</h3>
+                            <span class="icon-3d text-4xl">⚖️</span>
+                        </div>
+                        <p class="text-gray-200 flex-grow">Método para encontrar raíces de funciones combinando bisección y secante.</p>
+                        <div class="mt-4 text-sm text-blue-200">Haz clic para explorar</div>
+                    </div>
+                    <div class="card-back absolute inset-0 bg-gray-800 p-6 rounded-xl shadow-2xl flex flex-col opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <h3 class="text-xl font-bold mb-3 text-blue-300">Aplicaciones:</h3>
+                        <ul class="text-sm space-y-2">
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> Cálculo de puntos de equilibrio en economía
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> Determinación de tasas de interés implícitas
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> Solución de ecuaciones en ingeniería
+                            </li>
+                        </ul>
+                        <a href="{% url 'list_falsa_posicion' %}" class="mt-auto btn-glow bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg inline-block text-center transition-all duration-300 transform hover:scale-105">
+                            Probar calculadora
+                        </a>
+                    </div>
+                </div>
             </div>
-          </div>
-          
-          <div class="flex items-start">
-            <div class="flex-shrink-0 bg-purple-100 p-3 rounded-lg text-purple-600 mr-4">
-              <i class="fas fa-cogs text-xl"></i>
+            
+            <!-- Eliminación Gauss -->
+            <div class="method-card group" data-method="gauss" data-url="{% url 'list_gauss_eliminacion' %}">
+                <div class="card-inner">
+                    <div class="card-front bg-gradient-to-br from-green-600 to-emerald-500 p-6 rounded-xl shadow-2xl flex flex-col h-full transform transition-all duration-500 group-hover:-translate-y-2">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold">Eliminación Gauss</h3>
+                            <span class="icon-3d text-4xl">🧮</span>
+                        </div>
+                        <p class="text-gray-200 flex-grow">Resolución de sistemas de ecuaciones lineales mediante matrices triangulares.</p>
+                        <div class="mt-4 text-sm text-green-200">Haz clic para explorar</div>
+                    </div>
+                    <div class="card-back absolute inset-0 bg-gray-800 p-6 rounded-xl shadow-2xl flex flex-col opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <h3 class="text-xl font-bold mb-3 text-green-300">Aplicaciones:</h3>
+                        <ul class="text-sm space-y-2">
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> Análisis de circuitos eléctricos
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> Modelado de estructuras en ingeniería civil
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> Solución de problemas de flujo de redes
+                            </li>
+                        </ul>
+                        <a href="{% url 'list_gauss_eliminacion' %}" class="mt-auto btn-glow bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg inline-block text-center transition-all duration-300 transform hover:scale-105">
+                            Probar calculadora
+                        </a>
+                    </div>
+                </div>
             </div>
-            <div>
-              <h3 class="text-xl font-semibold text-gray-800 mb-2">Simulaciones Interactivas</h3>
-              <p class="text-gray-600">Modifica parámetros y observa cómo afectan a la solución óptima del problema.</p>
+            
+            <!-- Gauss-Jordan -->
+            <div class="method-card group" data-method="gauss-jordan" data-url="{% url 'list_gauss_jordan' %}">
+                <div class="card-inner">
+                    <div class="card-front bg-gradient-to-br from-sky-600 to-cyan-500 p-6 rounded-xl shadow-2xl flex flex-col h-full transform transition-all duration-500 group-hover:-translate-y-2">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold">Gauss-Jordan</h3>
+                            <span class="icon-3d text-4xl">🔍</span>
+                        </div>
+                        <p class="text-gray-200 flex-grow">Variante de eliminación gaussiana que produce una matriz escalonada reducida.</p>
+                        <div class="mt-4 text-sm text-cyan-200">Haz clic para explorar</div>
+                    </div>
+                    <div class="card-back absolute inset-0 bg-gray-800 p-6 rounded-xl shadow-2xl flex flex-col opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <h3 class="text-xl font-bold mb-3 text-cyan-300">Aplicaciones:</h3>
+                        <ul class="text-sm space-y-2">
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> Cálculo de matrices inversas
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> Solución de sistemas de ecuaciones lineales
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> Análisis de dependencia lineal
+                            </li>
+                        </ul>
+                        <a href="{% url 'list_gauss_jordan' %}" class="mt-auto btn-glow bg-cyan-600 hover:bg-cyan-700 text-white py-2 px-4 rounded-lg inline-block text-center transition-all duration-300 transform hover:scale-105">
+                            Probar calculadora
+                        </a>
+                    </div>
+                </div>
             </div>
-          </div>
+            
+            <!-- Diferenciación Finita -->
+            <div class="method-card group" data-method="diferenciacion" data-url="{% url 'list_diferenciacion_finita' %}">
+                <div class="card-inner">
+                    <div class="card-front bg-gradient-to-br from-red-600 to-orange-500 p-6 rounded-xl shadow-2xl flex flex-col h-full transform transition-all duration-500 group-hover:-translate-y-2">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold">Diferenciación Finita</h3>
+                            <span class="icon-3d text-4xl">📈</span>
+                        </div>
+                        <p class="text-gray-200 flex-grow">Aproximación numérica de derivadas usando diferencias entre puntos discretos.</p>
+                        <div class="mt-4 text-sm text-orange-200">Haz clic para explorar</div>
+                    </div>
+                    <div class="card-back absolute inset-0 bg-gray-800 p-6 rounded-xl shadow-2xl flex flex-col opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <h3 class="text-xl font-bold mb-3 text-orange-300">Aplicaciones:</h3>
+                        <ul class="text-sm space-y-2">
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> Simulación de dinámica de fluidos
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> Análisis de tensiones en estructuras
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> Modelado de fenómenos físicos
+                            </li>
+                        </ul>
+                        <a href="{% url 'list_diferenciacion_finita' %}" class="mt-auto btn-glow bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg inline-block text-center transition-all duration-300 transform hover:scale-105">
+                            Probar calculadora
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Interpolación Newton -->
+            <div class="method-card group" data-method="interpolacion" data-url="{% url 'list_interpolacion_newton' %}">
+                <div class="card-inner">
+                    <div class="card-front bg-gradient-to-br from-yellow-600 to-amber-500 p-6 rounded-xl shadow-2xl flex flex-col h-full transform transition-all duration-500 group-hover:-translate-y-2">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-2xl font-bold">Interpolación Newton</h3>
+                            <span class="icon-3d text-4xl">✨</span>
+                        </div>
+                        <p class="text-gray-200 flex-grow">Construcción de polinomios que pasan exactamente por un conjunto de puntos dados.</p>
+                        <div class="mt-4 text-sm text-amber-200">Haz clic para explorar</div>
+                    </div>
+                    <div class="card-back absolute inset-0 bg-gray-800 p-6 rounded-xl shadow-2xl flex flex-col opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <h3 class="text-xl font-bold mb-3 text-amber-300">Aplicaciones:</h3>
+                        <ul class="text-sm space-y-2">
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> Predicción de valores entre datos conocidos
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> Reconstrucción de señales digitales
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2">•</span> Análisis de tendencias en datos experimentales
+                            </li>
+                        </ul>
+                        <a href="{% url 'list_interpolacion_newton' %}" class="mt-auto btn-glow bg-amber-600 hover:bg-amber-700 text-white py-2 px-4 rounded-lg inline-block text-center transition-all duration-300 transform hover:scale-105">
+                            Probar calculadora
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      
-      <div class="relative h-96 bg-white rounded-xl shadow-lg overflow-hidden">
-        <!-- Lienzo para visualización matemática interactiva -->
-        <div id="mathVisualization" class="w-full h-full flex items-center justify-center bg-gray-900">
-          <p class="text-white">Cargando visualización interactiva...</p>
+        
+        <!-- Chatbot Section -->
+        <div class="bg-gray-800 rounded-2xl p-8 shadow-2xl border border-gray-700 mb-16 transform transition-all duration-500 hover:scale-[1.01]">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/3 mb-6 md:mb-0 flex justify-center">
+                    <div class="relative">
+                        <div class="w-48 h-48 rounded-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center shadow-lg animate-float">
+                            <div class="w-40 h-40 rounded-full bg-gray-800 flex items-center justify-center text-5xl">
+                                🤖
+                            </div>
+                        </div>
+                        <div class="absolute -bottom-2 -right-2 bg-green-500 rounded-full w-12 h-12 flex items-center justify-center text-xl shadow-lg animate-pulse">
+                            💬
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-2/3 md:pl-8">
+                    <h2 class="text-3xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400">
+                        Asistente de Métodos Numéricos
+                    </h2>
+                    <p class="text-gray-300 mb-6">
+                        Nuestro chatbot especializado puede responder tus dudas sobre métodos numéricos, explicarte conceptos y guiarte en el uso de las calculadoras.
+                    </p>
+                    <button id="open-chatbot" class="btn-glow bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-8 rounded-full font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+                        Hablar con el asistente
+                    </button>
+                </div>
+            </div>
         </div>
-        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-gray-900 to-transparent p-4">
-          <p class="text-sm text-white text-center">Usa el mouse para interactuar con la visualización</p>
+        
+        <!-- Información adicional -->
+        <div class="text-center">
+            <h2 class="text-3xl font-bold mb-6">¿Qué son los métodos numéricos?</h2>
+            <div class="max-w-4xl mx-auto text-gray-300 text-lg">
+                <p class="mb-6">
+                    Los métodos numéricos son técnicas mediante las cuales es posible formular problemas matemáticos de tal forma que puedan resolverse usando operaciones aritméticas. Son esenciales en campos donde los modelos analíticos exactos son difíciles o imposibles de resolver.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-gray-800 p-6 rounded-xl border-t-4 border-purple-500 transform transition-all duration-300 hover:translate-y-1">
+                        <h3 class="font-bold text-xl mb-3 text-purple-400">Precisión</h3>
+                        <p>Proporcionan soluciones aproximadas con un grado de exactitud controlable.</p>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-xl border-t-4 border-blue-500 transform transition-all duration-300 hover:translate-y-1">
+                        <h3 class="font-bold text-xl mb-3 text-blue-400">Eficiencia</h3>
+                        <p>Permiten resolver problemas complejos en tiempos razonables usando computadoras.</p>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-xl border-t-4 border-green-500 transform transition-all duration-300 hover:translate-y-1">
+                        <h3 class="font-bold text-xl mb-3 text-green-400">Versatilidad</h3>
+                        <p>Aplicables en ingeniería, física, economía, biología y muchas otras áreas.</p>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-</section>
-
-<!-- CTA Section -->
-{% if not user.is_authenticated %}
-<section class="py-20 bg-gradient-to-r from-blue-900 to-purple-900 text-white">
-  <div class="max-w-4xl mx-auto px-4 text-center">
-    <h2 class="text-3xl md:text-4xl font-bold mb-6">¿Listo para optimizar tus problemas?</h2>
-    <p class="text-xl mb-8 max-w-2xl mx-auto opacity-90">Regístrate ahora y desbloquea todo el potencial de nuestras herramientas matemáticas.</p>
     
-    <div class="flex flex-col sm:flex-row justify-center gap-4">
-      <a href="{% url 'register' %}" class="inline-flex items-center justify-center px-8 py-4 bg-white text-blue-900 font-bold rounded-lg shadow-lg hover:bg-gray-100 transform hover:scale-105 transition-all duration-300">
-        <i class="fas fa-user-plus mr-3"></i> Crear cuenta gratis
-      </a>
-      <a href="{% url 'login' %}" class="inline-flex items-center justify-center px-8 py-4 border-2 border-white text-white font-bold rounded-lg hover:bg-white hover:text-blue-900 transition-all duration-300">
-        <i class="fas fa-sign-in-alt mr-3"></i> Iniciar sesión
-      </a>
-    </div>
-  </div>
-</section>
-{% endif %}
-
-<!-- Math Animation Footer -->
-<footer class="bg-gray-900 text-white py-12">
-  <div class="max-w-7xl mx-auto px-4">
-    <div class="flex flex-col md:flex-row justify-between items-center">
-      <div class="mb-6 md:mb-0">
-        <h3 class="text-2xl font-bold mb-2">MathOpt</h3>
-        <p class="text-gray-400">Plataforma avanzada de investigación de operaciones</p>
-      </div>
-      
-      <div class="flex space-x-6">
-        <a href="#" class="text-gray-400 hover:text-white transition-colors">
-          <i class="fab fa-twitter text-xl"></i>
-        </a>
-        <a href="#" class="text-gray-400 hover:text-white transition-colors">
-          <i class="fab fa-github text-xl"></i>
-        </a>
-        <a href="#" class="text-gray-400 hover:text-white transition-colors">
-          <i class="fab fa-linkedin text-xl"></i>
-        </a>
-      </div>
+    <!-- Modal de método -->
+    <div id="method-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-70 backdrop-blur-sm"></div>
+        <div class="relative bg-gray-800 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto m-4 shadow-2xl border border-gray-700 transform transition-all duration-300 scale-95 opacity-0">
+            <button id="close-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white p-2 rounded-full bg-gray-700 hover:bg-gray-600 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div class="p-8">
+                <div id="modal-content">
+                    <!-- Contenido dinámico -->
+                </div>
+                <div class="mt-8 text-center">
+                    <a id="method-link" href="#" class="btn-glow inline-block bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-8 rounded-full font-bold transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
+                        Probar calculadora
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
     
-    <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
-      <p>© 2023 MathOpt. Todos los derechos reservados.</p>
+    <!-- Chatbot UI -->
+    <div id="chatbot-ui" class="fixed bottom-8 right-8 z-50 hidden">
+        <div class="bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 w-96 max-h-[80vh] flex flex-col">
+            <div class="bg-gradient-to-r from-purple-600 to-blue-600 p-4 rounded-t-2xl flex justify-between items-center">
+                <h3 class="font-bold text-white">Asistente de Ayzex</h3>
+                <button id="close-chatbot" class="text-white hover:text-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+            <div id="chatbot-messages" class="p-4 flex-grow overflow-y-auto max-h-[60vh] space-y-4">
+                <div class="flex">
+                    <div class="bg-gray-700 rounded-lg p-3 max-w-xs">
+                        <p>¡Hola! Soy el asistente de Ayzex. ¿En qué método numérico necesitas ayuda?</p>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-gray-700">
+                <div class="flex">
+                    <input id="chatbot-input" type="text" placeholder="Escribe tu pregunta..." class="flex-grow bg-gray-700 rounded-l-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <button id="send-message" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-r-lg transition">
+                        Enviar
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</footer>
+</div>
 
-<!-- Styles and Scripts -->
+<!-- Three.js para efectos 3D -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+
+<!-- Nuestros estilos y scripts -->
 <style>
-  .video-hero {
-    min-height: 100vh;
-  }
-  
-  .animate-fade-in-down {
-    animation: fadeInDown 1s ease-out forwards;
-  }
-  
-  .animate-fade-in-up {
-    animation: fadeInUp 1s ease-out forwards;
-  }
-  
-  .delay-100 {
-    animation-delay: 0.1s;
-  }
-  
-  .animate-bounce {
-    animation: bounce 2s infinite;
-  }
-  
-  @keyframes fadeInDown {
-    from {
-      opacity: 0;
-      transform: translateY(-30px);
+    /* Animaciones personalizadas */
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
     }
-    to {
-      opacity: 1;
-      transform: translateY(0);
+    
+    @keyframes gradient {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
     }
-  }
-  
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
+    
+    @keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 0 10px rgba(124, 58, 237, 0.5); }
+        50% { box-shadow: 0 0 20px rgba(124, 58, 237, 0.8); }
     }
-    to {
-      opacity: 1;
-      transform: translateY(0);
+    
+    .animate-float {
+        animation: float 3s ease-in-out infinite;
     }
-  }
-  
-  @keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
-      transform: translateY(0) translateX(-50%);
+    
+    .animation-delay-100 {
+        animation-delay: 0.1s;
     }
-    40% {
-      transform: translateY(-20px) translateX(-50%);
+    
+    .animation-delay-200 {
+        animation-delay: 0.2s;
     }
-    60% {
-      transform: translateY(-10px) translateX(-50%);
+    
+    .animation-delay-300 {
+        animation-delay: 0.3s;
     }
-  }
-  
-  .feature-card {
-    transition: all 0.3s ease;
-  }
-  
-  .feature-card:hover {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  }
+    
+    .animation-delay-400 {
+        animation-delay: 0.4s;
+    }
+    
+    .animate-gradient {
+        background-size: 200% 200%;
+        animation: gradient 8s ease infinite;
+    }
+    
+    .animate-fade-in {
+        animation: fadeIn 1.5s ease-out;
+    }
+    
+    /* Efecto de texto con borde */
+    .text-stroke {
+    text-shadow: 
+        -0.5px -0.5px 0 rgba(255, 255, 255, 0.3),
+        0.5px -0.5px 0 rgba(255, 255, 255, 0.3),
+        -0.5px 0.5px 0 rgba(255, 255, 255, 0.3),
+        0.5px 0.5px 0 rgba(255, 255, 255, 0.3);
+}
+    
+    /* Brillo suave */
+    .text-glow {
+        text-shadow: 0 0 10px rgba(165, 180, 252, 0.5), 
+                     0 0 20px rgba(192, 132, 252, 0.3);
+    }
+    
+    /* Animaciones de partículas */
+    .animate-particle-1 {
+        animation: float-particle 8s ease-in-out infinite;
+        top: 20%;
+        left: 10%;
+    }
+    
+    .animate-particle-2 {
+        animation: float-particle 10s ease-in-out infinite reverse;
+        top: 60%;
+        left: 80%;
+    }
+    
+    .animate-particle-3 {
+        animation: float-particle 7s ease-in-out infinite 2s;
+        top: 30%;
+        left: 50%;
+    }
+    
+    @keyframes float-particle {
+        0%, 100% { transform: translate(0, 0); opacity: 0.7; }
+        25% { transform: translate(20px, -10px); opacity: 0.4; }
+        50% { transform: translate(10px, 15px); opacity: 0.8; }
+        75% { transform: translate(-15px, 5px); opacity: 0.5; }
+    }
+    
+    .btn-glow {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-glow:hover {
+        box-shadow: 0 0 15px rgba(124, 58, 237, 0.7);
+    }
+    
+    .btn-glow::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            to bottom right,
+            rgba(255, 255, 255, 0) 45%,
+            rgba(255, 255, 255, 0.3) 50%,
+            rgba(255, 255, 255, 0) 55%
+        );
+        transform: rotate(30deg);
+        opacity: 0;
+        transition: all 0.5s ease;
+    }
+    
+    .btn-glow:hover::after {
+        opacity: 1;
+        animation: shine 1.5s infinite;
+    }
+    
+    @keyframes shine {
+        0% { left: -50%; top: -50%; }
+        100% { left: 150%; top: 150%; }
+    }
+    
+    .method-card {
+        perspective: 1000px;
+        height: 280px;
+    }
+    
+    .card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.6s;
+        transform-style: preserve-3d;
+    }
+    
+    .method-card:hover .card-inner {
+        transform: rotateY(180deg);
+    }
+    
+    .card-front, .card-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+    }
+    
+    .card-back {
+        transform: rotateY(180deg);
+    }
+    
+    .icon-3d {
+        transform-style: preserve-3d;
+        animation: float 4s ease-in-out infinite;
+    }
+    
+    /* Estilos para el modal */
+    #method-modal.show {
+        opacity: 1;
+    }
+    
+    #method-modal.show > div:last-child {
+        transform: scale(1);
+        opacity: 1;
+    }
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Canvas Animation for Mathematical Elements
-  const canvas = document.getElementById('mathCanvas');
-  const ctx = canvas.getContext('2d');
-  
-  // Set canvas size
-  function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  
-  window.addEventListener('resize', resizeCanvas);
-  resizeCanvas();
-  
-  // Mathematical symbols for animation
-  const symbols = ['Σ', '∫', '∂', 'Δ', '∇', '√', '∞', 'π', 'θ', 'λ'];
-  const particles = [];
-  
-  // Create particles
-  for (let i = 0; i < 50; i++) {
-    particles.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      size: Math.random() * 20 + 10,
-      speed: Math.random() * 2 + 1,
-      symbol: symbols[Math.floor(Math.random() * symbols.length)],
-      opacity: Math.random() * 0.5 + 0.1
-    });
-  }
-  
-  // Animation loop
-  function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Configuración de los métodos
+    const methods = {
+        'simplex': {
+            title: 'Método Simplex',
+            description: 'El método simplex es un algoritmo para resolver problemas de programación lineal. Explora los vértices de la región factible para encontrar la solución óptima.',
+            formula: 'Maximizar Z = cᵀx sujeto a Ax ≤ b, x ≥ 0',
+            steps: [
+                'Convertir el problema a forma estándar',
+                'Construir la tabla simplex inicial',
+                'Identificar la variable entrante y saliente',
+                'Actualizar la tabla mediante operaciones de fila',
+                'Repetir hasta alcanzar optimalidad'
+            ],
+            applications: [
+                'Optimización de recursos en empresas',
+                'Planificación de rutas de transporte',
+                'Asignación óptima de presupuestos',
+                'Mezcla de productos en manufactura'
+            ],
+            color: 'indigo'
+        },
+        'falsa-posicion': {
+            title: 'Método de Falsa Posición',
+            description: 'El método de falsa posición (o regula falsi) es un algoritmo para encontrar raíces de funciones que combina características del método de bisección y del método de la secante.',
+            formula: 'c = (a*f(b) - b*f(a)) / (f(b) - f(a))',
+            steps: [
+                'Seleccionar dos puntos iniciales a y b tal que f(a)*f(b) < 0',
+                'Calcular el punto c usando la fórmula de falsa posición',
+                'Evaluar f(c)',
+                'Si f(c) es suficientemente pequeño, c es la raíz',
+                'Si no, reemplazar a o b con c según el signo de f(c)',
+                'Repetir hasta convergencia'
+            ],
+            applications: [
+                'Cálculo de puntos de equilibrio en economía',
+                'Determinación de tasas de interés implícitas',
+                'Solución de ecuaciones en ingeniería',
+                'Análisis de sistemas no lineales'
+            ],
+            color: 'blue'
+        },
+        'gauss': {
+            title: 'Eliminación Gaussiana',
+            description: 'La eliminación gaussiana es un método para resolver sistemas de ecuaciones lineales. Consiste en convertir la matriz aumentada del sistema en una forma escalonada mediante operaciones elementales de fila.',
+            formula: 'Ax = b → Ux = c (donde U es triangular superior)',
+            steps: [
+                'Escribir la matriz aumentada del sistema',
+                'Usar operaciones elementales para obtener una matriz triangular superior',
+                'Resolver mediante sustitución hacia atrás'
+            ],
+            applications: [
+                'Análisis de circuitos eléctricos',
+                'Modelado de estructuras en ingeniería civil',
+                'Solución de problemas de flujo de redes',
+                'Análisis de sistemas lineales en física'
+            ],
+            color: 'green'
+        },
+        'gauss-jordan': {
+            title: 'Método de Gauss-Jordan',
+            description: 'El método de Gauss-Jordan es una variante de la eliminación gaussiana que transforma la matriz aumentada en una forma escalonada reducida, permitiendo leer directamente la solución.',
+            formula: 'Ax = b → Ix = c (donde I es la matriz identidad)',
+            steps: [
+                'Escribir la matriz aumentada del sistema',
+                'Usar operaciones elementales para obtener una matriz diagonal con unos',
+                'La solución aparece directamente en la última columna'
+            ],
+            applications: [
+                'Cálculo de matrices inversas',
+                'Solución de sistemas de ecuaciones lineales',
+                'Análisis de dependencia lineal',
+                'Cambios de base en álgebra lineal'
+            ],
+            color: 'cyan'
+        },
+        'diferenciacion': {
+            title: 'Diferenciación Finita',
+            description: 'La diferenciación finita es una técnica numérica para aproximar derivadas de funciones usando diferencias entre valores de la función en puntos discretos.',
+            formulas: [
+                'Diferencias hacia adelante: f\'(x) ≈ (f(x+h) - f(x)) / h',
+                'Diferencias hacia atrás: f\'(x) ≈ (f(x) - f(x-h)) / h',
+                'Diferencias centradas: f\'(x) ≈ (f(x+h) - f(x-h)) / (2h)'
+            ],
+            steps: [
+                'Seleccionar el tamaño de paso h',
+                'Aplicar la fórmula de diferencias seleccionada',
+                'Evaluar la función en los puntos requeridos',
+                'Calcular la aproximación de la derivada'
+            ],
+            applications: [
+                'Simulación de dinámica de fluidos',
+                'Análisis de tensiones en estructuras',
+                'Modelado de fenómenos físicos',
+                'Soluciones numéricas de ecuaciones diferenciales'
+            ],
+            color: 'orange'
+        },
+        'interpolacion': {
+            title: 'Interpolación de Newton',
+            description: 'La interpolación de Newton es un método para construir un polinomio que pase exactamente por un conjunto de puntos dados, usando diferencias divididas.',
+            formula: 'P(x) = f[x0] + f[x0,x1](x-x0) + f[x0,x1,x2](x-x0)(x-x1) + ...',
+            steps: [
+                'Calcular las diferencias divididas',
+                'Construir el polinomio de Newton usando las diferencias',
+                'Evaluar el polinomio en los puntos deseados'
+            ],
+            applications: [
+                'Predicción de valores entre datos conocidos',
+                'Reconstrucción de señales digitales',
+                'Análisis de tendencias en datos experimentales',
+                'Aproximación de funciones complejas'
+            ],
+            color: 'amber'
+        }
+    };
+
+    // Inicialización de Three.js para el fondo de estrellas
+    function initStarfield() {
+        const container = document.getElementById('stars-container');
+        
+        // Configuración de la escena
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+        
+        // Crear estrellas
+        const starsGeometry = new THREE.BufferGeometry();
+        const starCount = 2000;
+        
+        const positions = new Float32Array(starCount * 3);
+        const sizes = new Float32Array(starCount);
+        const colors = new Float32Array(starCount * 3);
+        
+        for (let i = 0; i < starCount; i++) {
+            // Posiciones aleatorias en un espacio esférico
+            const radius = 5 + Math.random() * 20;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(2 * Math.random() - 1);
+            
+            positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+            positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+            positions[i * 3 + 2] = radius * Math.cos(phi);
+            
+            // Tamaños aleatorios
+            sizes[i] = 0.1 + Math.random() * 0.5;
+            
+            // Colores aleatorios con tendencia al blanco/azul
+            colors[i * 3] = 0.5 + Math.random() * 0.5; // R
+            colors[i * 3 + 1] = 0.5 + Math.random() * 0.5; // G
+            colors[i * 3 + 2] = 0.7 + Math.random() * 0.3; // B
+        }
+        
+        starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        starsGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        starsGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+        
+        // Material de las estrellas
+        const starsMaterial = new THREE.PointsMaterial({
+            size: 0.1,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.8,
+            sizeAttenuation: true
+        });
+        
+        const starField = new THREE.Points(starsGeometry, starsMaterial);
+        scene.add(starField);
+        
+        // Configurar cámara
+        camera.position.z = 5;
+        
+        // Animación
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Rotación lenta de las estrellas
+            starField.rotation.x += 0.0001;
+            starField.rotation.y += 0.0002;
+            
+            renderer.render(scene, camera);
+        }
+        
+        animate();
+        
+        // Manejo de redimensionamiento
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    }
+
+    // Inicializar modal de métodos
+    function initMethodModal() {
+        const methodCards = document.querySelectorAll('.method-card');
+        const modal = document.getElementById('method-modal');
+        const modalContent = document.getElementById('modal-content');
+        const methodLink = document.getElementById('method-link');
+        const closeModal = document.getElementById('close-modal');
+        
+        methodCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const method = card.dataset.method;
+                const methodData = methods[method];
+                
+                // Construir contenido del modal
+                let content = `
+                    <h2 class="text-3xl font-bold mb-6 text-${methodData.color}-400">${methodData.title}</h2>
+                    <p class="text-lg mb-6">${methodData.description}</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-4 text-${methodData.color}-300">Pasos del método:</h3>
+                            <ol class="list-decimal pl-5 space-y-2">
+                                ${methodData.steps.map(step => `<li>${step}</li>`).join('')}
+                            </ol>
+                            
+                            <h3 class="text-xl font-semibold mt-6 mb-4 text-${methodData.color}-300">Fórmula${method === 'diferenciacion' ? 's' : ''}:</h3>
+                            ${method === 'diferenciacion' ? 
+                                methodData.formulas.map(f => `<div class="bg-gray-700 p-3 rounded mb-2"><code>${f}</code></div>`).join('') : 
+                                `<div class="bg-gray-700 p-3 rounded"><code>${methodData.formula}</code></div>`
+                            }
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-xl font-semibold mb-4 text-${methodData.color}-300">Aplicaciones en la vida real:</h3>
+                            <ul class="list-disc pl-5 space-y-2">
+                                ${methodData.applications.map(app => `<li>${app}</li>`).join('')}
+                            </ul>
+                            
+                            <div class="mt-6 p-4 bg-gray-700 rounded-lg border-l-4 border-${methodData.color}-500">
+                                <h4 class="font-semibold mb-2">¿Sabías que?</h4>
+                                <p class="text-sm">${getRandomFact(method)}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                modalContent.innerHTML = content;
+                methodLink.href = card.dataset.url;
+                
+                // Mostrar modal con animación
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.add('show');
+                }, 10);
+            });
+        });
+        
+        // Cerrar modal
+        closeModal.addEventListener('click', () => {
+            modal.classList.remove('show');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        });
+    }
     
-    particles.forEach(particle => {
-      ctx.font = `${particle.size}px Arial`;
-      ctx.fillStyle = `rgba(255, 255, 255, ${particle.opacity})`;
-      ctx.fillText(particle.symbol, particle.x, particle.y);
-      
-      particle.y += particle.speed;
-      if (particle.y > canvas.height) {
-        particle.y = -20;
-        particle.x = Math.random() * canvas.width;
-      }
-    });
+    // Datos curiosos para cada método
+    function getRandomFact(method) {
+        const facts = {
+            'simplex': [
+                'El método simplex fue desarrollado por George Dantzig en 1947 y revolucionó la investigación de operaciones.',
+                'Problemas con miles de variables pueden resolverse eficientemente con el método simplex.',
+                'La NASA ha utilizado el método simplex para optimizar rutas de misiones espaciales.'
+            ],
+            'falsa-posicion': [
+                'El método de falsa posición es uno de los más antiguos, con registros de su uso en papiros egipcios.',
+                'Converge más rápido que el método de bisección en muchos casos prácticos.',
+                'Fue ampliamente usado por astrónomos árabes en el siglo IX para cálculos celestes.'
+            ],
+            'gauss': [
+                'Carl Friedrich Gauss desarrolló este método a los 18 años mientras estudiaba órbitas planetarias.',
+                'Es el algoritmo más utilizado para resolver sistemas de ecuaciones lineales en computación científica.',
+                'Matrices de hasta millones de variables pueden resolverse con versiones optimizadas de este método.'
+            ],
+            'gauss-jordan': [
+                'Aunque lleva el nombre de Gauss y Jordan, Wilhelm Jordan fue un topógrafo que popularizó el método.',
+                'Es menos eficiente computacionalmente que la eliminación gaussiana estándar.',
+                'Es ideal para calcular matrices inversas de forma explícita.'
+            ],
+            'diferenciacion': [
+                'Las diferencias finitas son fundamentales en simulaciones climáticas y de dinámica de fluidos.',
+                'El error en la aproximación disminuye con el cuadrado del tamaño de paso en diferencias centradas.',
+                'Se usan en gráficos por computadora para calcular normales y curvaturas en superficies 3D.'
+            ],
+            'interpolacion': [
+                'Newton desarrolló este método mientras trabajaba en problemas de física y astronomía.',
+                'El polinomio de Newton es algebraicamente equivalente al de Lagrange, pero más eficiente computacionalmente.',
+                'Se usa en GPS para interpolar datos entre satélites y mejorar la precisión.'
+            ]
+        };
+        
+        const methodFacts = facts[method];
+        return methodFacts[Math.floor(Math.random() * methodFacts.length)];
+    }
     
-    requestAnimationFrame(animate);
-  }
-  
-  animate();
-  
-  // Interactive Math Visualization
-  const mathViz = document.getElementById('mathVisualization');
-  
-  // This would be replaced with actual visualization library like D3.js, Three.js, etc.
-  mathViz.innerHTML = `
-    <div class="text-center p-8">
-      <i class="fas fa-calculator text-5xl text-blue-400 mb-4"></i>
-      <h3 class="text-xl font-semibold text-white mb-2">Visualización Interactiva</h3>
-      <p class="text-gray-400">Implementa aquí una visualización matemática interactiva</p>
-    </div>
-  `;
-});
+    // Inicializar chatbot
+    function initChatbot() {
+        const chatbotUI = document.getElementById('chatbot-ui');
+        const openChatbot = document.getElementById('open-chatbot');
+        const closeChatbot = document.getElementById('close-chatbot');
+        const chatMessages = document.getElementById('chatbot-messages');
+        const chatInput = document.getElementById('chatbot-input');
+        const sendButton = document.getElementById('send-message');
+        
+        openChatbot.addEventListener('click', () => {
+            chatbotUI.classList.remove('hidden');
+            gsap.from(chatbotUI, {
+                y: 20,
+                opacity: 0,
+                duration: 0.3,
+                ease: 'power2.out'
+            });
+        });
+        
+        closeChatbot.addEventListener('click', () => {
+            gsap.to(chatbotUI, {
+                y: 20,
+                opacity: 0,
+                duration: 0.2,
+                ease: 'power2.in',
+                onComplete: () => chatbotUI.classList.add('hidden')
+            });
+        });
+        
+        function addMessage(text, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex ${isUser ? 'justify-end' : 'justify-start'}`;
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = isUser ? 
+                'bg-purple-600 rounded-lg p-3 max-w-xs' : 
+                'bg-gray-700 rounded-lg p-3 max-w-xs';
+            messageContent.innerHTML = `<p>${text}</p>`;
+            
+            messageDiv.appendChild(messageContent);
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function sendMessage() {
+            const message = chatInput.value.trim();
+            if (message) {
+                addMessage(message, true);
+                chatInput.value = '';
+                
+                // Respuesta del bot
+                setTimeout(() => {
+                    addMessage(getBotResponse(message));
+                }, 1000);
+            }
+        }
+        
+        sendButton.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    }
+    
+    // Respuestas del chatbot
+    function getBotResponse(message) {
+        const lowerMsg = message.toLowerCase();
+        
+        // Detectar método mencionado
+        const methodResponses = {
+            'simplex': 'El método simplex es un algoritmo para resolver problemas de programación lineal. ¿Quieres saber sobre su implementación, teoría o ver un ejemplo?',
+            'falsa posicion': 'El método de falsa posición encuentra raíces de funciones. Es más eficiente que la bisección. ¿Necesitas ayuda con su fórmula o aplicación?',
+            'gauss': 'La eliminación gaussiana resuelve sistemas de ecuaciones lineales. ¿Te interesa conocer los pasos o ver cómo usar la calculadora?',
+            'gauss jordan': 'Gauss-Jordan transforma matrices a forma escalonada reducida. Es útil para calcular inversas. ¿En qué necesitas ayuda?',
+            'diferenciacion finita': 'Diferenciación finita aproxima derivadas numéricamente. ¿Quieres saber sobre diferencias hacia adelante, atrás o centradas?',
+            'interpolacion': 'La interpolación de Newton construye polinomios que pasan por puntos dados. ¿Necesitas ayuda con diferencias divididas o evaluación?'
+        };
+        
+        for (const [method, response] of Object.entries(methodResponses)) {
+            if (lowerMsg.includes(method)) {
+                return response;
+            }
+        }
+        
+        // Respuestas generales
+        if (lowerMsg.includes('hola') || lowerMsg.includes('hi') || lowerMsg.includes('hello')) {
+            return '¡Hola! Soy el asistente de Ayzex. Puedo explicarte sobre métodos numéricos como Simplex, Falsa Posición, Gauss, etc. ¿En qué necesitas ayuda?';
+        }
+        
+        if (lowerMsg.includes('ayuda') || lowerMsg.includes('help')) {
+            return 'Puedo explicarte conceptos de métodos numéricos, mostrarte ejemplos o guiarte para usar las calculadoras. ¿Qué método te interesa?';
+        }
+        
+        if (lowerMsg.includes('calculadora') || lowerMsg.includes('calculator')) {
+            return 'Cada método tiene su propia calculadora interactiva. Haz clic en "Probar calculadora" en las tarjetas o en los modales para acceder a ellas.';
+        }
+        
+        const randomResponses = [
+            'Interesante pregunta. ¿Podrías especificar a qué método numérico te refieres?',
+            'No estoy seguro de entender. ¿Podrías reformular tu pregunta mencionando el método numérico?',
+            'Puedo ayudarte con métodos como Simplex, Falsa Posición, Gauss, etc. ¿Cuál te interesa?',
+            '¿Quieres saber sobre la teoría, aplicación o cómo usar las calculadoras de estos métodos?'
+        ];
+        
+        return randomResponses[Math.floor(Math.random() * randomResponses.length)];
+    }
+    
+    // Inicializar todo cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', () => {
+        initStarfield();
+        initMethodModal();
+        initChatbot();
+        
+        // Animaciones adicionales con GSAP
+        gsap.from('.method-card', {
+            y: 50,
+            opacity: 0,
+            stagger: 0.1,
+            duration: 0.8,
+            delay: 0.5,
+            ease: 'back.out'
+        });
+    });
 </script>
 {% endblock %}

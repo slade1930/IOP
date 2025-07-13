@@ -126,3 +126,142 @@ class ProblemaSimplex(models.Model):
             )
 
         super().save(*args, **kwargs)
+
+
+class FalsaPosicion(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    funcion = models.CharField(
+        max_length=255,
+        help_text="Ingresa la función en términos de x, por ejemplo: x**3 - x - 2",
+    )
+    x0 = models.FloatField(help_text="Extremo izquierdo del intervalo")
+    x1 = models.FloatField(help_text="Extremo derecho del intervalo")
+    tolerancia = models.FloatField(default=0.0001, help_text="Tolerancia del método")
+    max_iteraciones = models.IntegerField(
+        default=100, help_text="Número máximo de iteraciones"
+    )
+    grafico_base64 = models.TextField(blank=True, null=True)
+    resultado = models.TextField(blank=True, null=True)
+    explicacion_chatgpt = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Explicación generada automáticamente por ChatGPT del procedimiento simplex",
+    )
+    creado = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Ecuación: {self.funcion} en [{self.x0}, {self.x1}]"
+
+    class Meta:
+        verbose_name = "Cálculo Falsa Posición"
+        verbose_name_plural = "Cálculos Falsa Posición"
+        ordering = ["-creado"]
+
+
+class GaussEliminacion(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    matriz_a = models.TextField(help_text="Matriz A como lista de listas")
+    vector_b = models.TextField(help_text="Vector b como lista")
+    resultado = models.TextField(blank=True, null=True)
+    grafico_base64 = models.TextField(blank=True, null=True)
+    explicacion_chatgpt = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Explicación generada automáticamente por ChatGPT del procedimiento simplex",
+    )
+    creado = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Gauss Eliminación: {self.usuario.username}"
+
+    class Meta:
+        verbose_name = "Cálculo Gauss"
+        verbose_name_plural = "Cálculos Gauss"
+        ordering = ["-creado"]
+
+
+class GaussJordan(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    matriz_a = models.TextField(help_text="Matriz A como lista de listas")
+    vector_b = models.TextField(help_text="Vector b como lista")
+    problema = models.TextField(help_text="Descripción del problema económico")
+    resultado = models.TextField(blank=True, null=True)
+    pasos_detallados = models.TextField(blank=True, null=True)
+    explicacion_chatgpt = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Explicación generada automáticamente por ChatGPT del procedimiento simplex",
+    )
+    grafico_base64 = models.TextField(blank=True, null=True)
+    matriz_transformada = models.TextField(blank=True, null=True)
+    creado = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Gauss-Jordan Económico: {self.usuario.username}"
+
+
+class DiferenciacionFinita(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    funcion = models.CharField(
+        max_length=255, help_text="Función en términos de x, por ejemplo: sin(x)"
+    )
+    punto = models.FloatField(help_text="Punto en el que se desea derivar")
+    h = models.FloatField(
+        default=0.01, help_text="Valor de h para la fórmula de diferencia"
+    )
+    orden = models.IntegerField(default=1, help_text="Orden de la derivada (1, 2, ...)")
+    tipo = models.CharField(
+        max_length=20,
+        default="central",
+        help_text="Tipo de diferencia: adelante, atrás o central",
+    )
+    resultado = models.JSONField(blank=True, null=True)
+    explicacion_chatgpt = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Explicación generada automáticamente por ChatGPT del procedimiento simplex",
+    )
+    grafico_base64 = models.TextField(blank=True, null=True)
+    creado = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Diferenciación en x={self.punto} de {self.funcion}"
+
+    def get_resultado_formateado(self):
+        if self.resultado:
+            return f"Derivada de orden {self.orden}: {self.resultado.get('valor', '')}"
+        return ""
+
+    class Meta:
+        verbose_name = "Cálculo Diferenciación Finita"
+        verbose_name_plural = "Cálculos Diferenciación Finita"
+        ordering = ["-creado"]
+
+
+class InterpolacionNewton(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    x_vals = models.JSONField(help_text="Lista de valores x, ej: [1, 2, 3]")
+    y_vals = models.JSONField(help_text="Lista de valores y, ej: [2, 4, 6]")
+    x_interpolar = models.FloatField(help_text="Punto donde se desea interpolar")
+    resultado = models.JSONField(blank=True, null=True)
+    polinomio = models.TextField(blank=True, null=True)
+    explicacion_chatgpt = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Explicación generada automáticamente por ChatGPT del procedimiento simplex",
+    )
+    grafico_base64 = models.TextField(blank=True, null=True)
+    creado = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Interpolación de Newton en x={self.x_interpolar}"
+
+    def get_resultado_formateado(self):
+        if self.resultado:
+            return f"Valor interpolado: {self.resultado.get('valor', '')}"
+        return ""
+
+    class Meta:
+        verbose_name = "Cálculo Interpolación Newton"
+        verbose_name_plural = "Cálculos Interpolación Newton"
+        ordering = ["-creado"]

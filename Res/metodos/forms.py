@@ -1,6 +1,13 @@
 from django import forms
 from django.core.validators import MinValueValidator, MaxValueValidator
-from .models import ProblemaSimplex
+from .models import (
+    ProblemaSimplex,
+    FalsaPosicion,
+    GaussEliminacion,
+    GaussJordan,
+    DiferenciacionFinita,
+    InterpolacionNewton,
+)
 import re
 
 
@@ -146,3 +153,154 @@ class SimplexForm(forms.ModelForm):
                 )
 
         return cleaned_data
+
+
+class FalsaPosicionForm(forms.ModelForm):
+    class Meta:
+        model = FalsaPosicion
+        fields = ["funcion", "x0", "x1", "tolerancia", "max_iteraciones"]
+        widgets = {
+            "funcion": forms.TextInput(
+                attrs={"placeholder": "x**3 - x - 2", "class": "function-input"}
+            ),
+            "x0": forms.NumberInput(attrs={"step": "any", "placeholder": "Ej. 1.0"}),
+            "x1": forms.NumberInput(attrs={"step": "any", "placeholder": "Ej. 2.0"}),
+            "tolerancia": forms.NumberInput(
+                attrs={"step": "any", "min": "0", "value": "0.0001"}
+            ),
+            "max_iteraciones": forms.NumberInput(attrs={"min": "1", "value": "100"}),
+        }
+        help_texts = {
+            "funcion": "Use x como variable. Operadores: +, -, *, /, **",
+            "tolerancia": "Precisión deseada para el resultado",
+        }
+
+
+class GaussEliminacionForm(forms.ModelForm):
+    class Meta:
+        model = GaussEliminacion
+        fields = ["matriz_a", "vector_b"]
+        widgets = {
+            "matriz_a": forms.Textarea(
+                attrs={"placeholder": "[[2, 1], [5, 7]]", "rows": 4}
+            ),
+            "vector_b": forms.Textarea(attrs={"placeholder": "[11, 13]", "rows": 2}),
+        }
+
+
+class GaussJordanForm(forms.ModelForm):
+    class Meta:
+        model = GaussJordan
+        fields = ["problema", "matriz_a", "vector_b"]
+        widgets = {
+            "problema": forms.Textarea(
+                attrs={
+                    "placeholder": "Ejemplo: Inversión en bonos municipales...",
+                    "rows": 3,
+                }
+            ),
+            "matriz_a": forms.Textarea(
+                attrs={
+                    "placeholder": "[[1, 1], [0.105, 0.12]] para problema de 2 inversiones",
+                    "rows": 3,
+                }
+            ),
+            "vector_b": forms.Textarea(
+                attrs={
+                    "placeholder": "[12000, 1335] para el ejemplo anterior",
+                    "rows": 2,
+                }
+            ),
+        }
+        labels = {
+            "problema": "Descripción del Problema Económico",
+            "matriz_a": "Coeficientes del Sistema",
+            "vector_b": "Términos Independientes",
+        }
+
+
+class DiferenciacionFinitaForm(forms.ModelForm):
+    class Meta:
+        model = DiferenciacionFinita
+        fields = ["funcion", "punto", "h", "orden", "tipo"]
+        widgets = {
+            "funcion": forms.TextInput(
+                attrs={"placeholder": "sin(x)", "class": "function-input"}
+            ),
+            "punto": forms.NumberInput(attrs={"step": "any", "placeholder": "Ej. 1.0"}),
+            "h": forms.NumberInput(attrs={"step": "any", "value": "0.01"}),
+            "orden": forms.NumberInput(attrs={"min": "1", "value": "1"}),
+            "tipo": forms.Select(
+                choices=[
+                    ("adelante", "Diferencia Adelante"),
+                    ("atras", "Diferencia Atrás"),
+                    ("central", "Diferencia Central"),
+                ]
+            ),
+        }
+        help_texts = {
+            "funcion": "Use x como variable. Operadores: +, -, *, /, **, sin, cos, tan, exp, log",
+            "h": "Paso de aproximación para la derivada numérica",
+            "orden": "Orden de la derivada que desea calcular",
+            "tipo": "Tipo de fórmula de diferencias finitas",
+        }
+
+    def clean_funcion(self):
+        funcion = self.cleaned_data["funcion"]
+        # Validación básica de la función
+        if "x" not in funcion:
+            raise forms.ValidationError("La función debe contener la variable 'x'")
+        return funcion
+
+
+class InterpolacionNewtonForm(forms.ModelForm):
+    x_vals_input = forms.CharField(
+        widget=forms.Textarea(attrs={"placeholder": "1, 2, 3", "rows": 2}),
+        help_text="Valores de x separados por comas",
+    )
+    y_vals_input = forms.CharField(
+        widget=forms.Textarea(attrs={"placeholder": "2, 4, 6", "rows": 2}),
+        help_text="Valores de y separados por comas",
+    )
+
+    class Meta:
+        model = InterpolacionNewton
+        fields = ["x_vals_input", "y_vals_input", "x_interpolar"]
+        widgets = {
+            "x_interpolar": forms.NumberInput(
+                attrs={"step": "any", "placeholder": "Ej. 2.5"}
+            ),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        x_vals = cleaned_data.get("x_vals_input", "").strip()
+        y_vals = cleaned_data.get("y_vals_input", "").strip()
+
+        try:
+            x_list = [float(x.strip()) for x in x_vals.split(",") if x.strip()]
+            y_list = [float(y.strip()) for y in y_vals.split(",") if y.strip()]
+        except ValueError:
+            raise forms.ValidationError(
+                "Los valores deben ser números separados por comas"
+            )
+
+        if len(x_list) != len(y_list):
+            raise forms.ValidationError("Debe haber el mismo número de valores x e y")
+
+        if len(x_list) < 2:
+            raise forms.ValidationError(
+                "Se necesitan al menos 2 puntos para interpolación"
+            )
+
+        cleaned_data["x_vals"] = x_list
+        cleaned_data["y_vals"] = y_list
+        return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.x_vals = self.cleaned_data["x_vals"]
+        instance.y_vals = self.cleaned_data["y_vals"]
+        if commit:
+            instance.save()
+        return instance

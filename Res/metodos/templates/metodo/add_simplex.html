@@ -1,157 +1,416 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block content %}
-<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-  <div class="max-w-3xl mx-auto">
-    <div class="bg-white shadow rounded-lg overflow-hidden">
-      <div class="bg-blue-600 px-6 py-4">
-        <h2 class="text-2xl font-bold text-white text-center">Nuevo Problema de Programación Lineal</h2>
-      </div>
-      
-      <div class="px-6 py-8">
-        <form method="post" class="space-y-6" novalidate>
-          {% csrf_token %}
-          
-          {% if form.non_field_errors %}
-          <div class="bg-red-50 border-l-4 border-red-500 p-4">
-            {% for error in form.non_field_errors %}
-              <p class="text-red-700">{{ error }}</p>
-            {% endfor %}
-          </div>
-          {% endif %}
-          
-          <!-- Función Objetivo -->
-          <div>
-            <label for="{{ form.objetivo.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-              Función Objetivo
-            </label>
-            <div class="mt-1 relative rounded-md shadow-sm">
-              {{ form.objetivo }}
-            </div>
-            <p class="mt-1 text-sm text-gray-500">{{ form.objetivo.help_text }}</p>
-            {% for error in form.objetivo.errors %}
-              <p class="mt-1 text-sm text-red-600">{{ error }}</p>
-            {% endfor %}
-          </div>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Tipo de Optimización -->
-            <div>
-              <label for="{{ form.tipo_optimizacion.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                Tipo de Optimización
-              </label>
-              <div class="mt-1">
-                {{ form.tipo_optimizacion }}
-              </div>
-            </div>
-            
-            <!-- Variables de Decisión -->
-            <div>
-              <label for="{{ form.variables_decision.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                Número de Variables
-              </label>
-              <div class="mt-1">
-                {{ form.variables_decision }}
-              </div>
-              <p class="mt-1 text-sm text-gray-500">{{ form.variables_decision.help_text }}</p>
-              {% for error in form.variables_decision.errors %}
-                <p class="mt-1 text-sm text-red-600">{{ error }}</p>
-              {% endfor %}
-            </div>
-          </div>
-          
-          <!-- Restricciones -->
-          <div>
-            <label for="{{ form.restricciones.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-              Restricciones
-            </label>
-            <div class="mt-1">
-              {{ form.restricciones }}
-            </div>
-            <p class="mt-1 text-sm text-gray-500">{{ form.restricciones.help_text }}</p>
-            {% for error in form.restricciones.errors %}
-              <p class="mt-1 text-sm text-red-600">{{ error }}</p>
-            {% endfor %}
-          </div>
-          
-          <!-- Configuraciones Avanzadas -->
-          <div class="pt-2">
-            <button type="button" @click="advancedOpen = !advancedOpen" 
-                    class="flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium">
-              <span>Configuraciones Avanzadas</span>
-              <svg :class="{'rotate-180': advancedOpen}" class="ml-2 h-5 w-5 transform transition-transform" 
-                   xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-              </svg>
-            </button>
-            
-            <div x-show="advancedOpen" x-transition class="mt-4 space-y-6 border-t pt-4">
-              <!-- Tolerancia -->
-              <div>
-                <label for="{{ form.tolerancia.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                  Tolerancia
-                </label>
-                <div class="mt-1">
-                  {{ form.tolerancia }}
-                </div>
-                <p class="mt-1 text-sm text-gray-500">{{ form.tolerancia.help_text }}</p>
-                {% for error in form.tolerancia.errors %}
-                  <p class="mt-1 text-sm text-red-600">{{ error }}</p>
-                {% endfor %}
-              </div>
-              
-              <!-- Máximo de Iteraciones -->
-              <div>
-                <label for="{{ form.max_iteraciones.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-                  Máximo de Iteraciones
-                </label>
-                <div class="mt-1">
-                  {{ form.max_iteraciones }}
-                </div>
-                <p class="mt-1 text-sm text-gray-500">{{ form.max_iteraciones.help_text }}</p>
-                {% for error in form.max_iteraciones.errors %}
-                  <p class="mt-1 text-sm text-red-600">{{ error }}</p>
-                {% endfor %}
-              </div>
-            </div>
-          </div>
-          
-          <div class="pt-4">
-            <button type="submit" 
-                    class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-              <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-              </svg>
-              Resolver Problema
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+{% block title %}Programación Lineal{% endblock %}
+
+{% block extra_head %}
+<style>
+    input, textarea, select {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #4b5563;
+        border-radius: 0.375rem;
+        background-color: rgba(31, 41, 55, 0.7);
+        color: #f3f4f6;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        transition: all 0.2s ease-in-out;
+    }
+
+    textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    input:focus, textarea:focus, select:focus {
+        outline: none;
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3);
+        background-color: rgba(31, 41, 55, 0.9);
+    }
+
+    .error input, .error select, .error textarea {
+        border-color: #ef4444;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+    }
+    
+    /* Estilos para el fondo cósmico */
+    .cosmic-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+    }
+    
+    .cosmic-particle {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.5);
+    }
+    
+    .cosmic-nebula {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(60px);
+        opacity: 0.15;
+    }
+    
+    .content-wrapper {
+        position: relative;
+        z-index: 1;
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(10px);
+        min-height: 100vh;
+    }
+    
+    /* Estilos para los botones de ejemplo */
+    .example-btn {
+        transition: all 0.2s ease;
+    }
+    
+    .example-btn:hover {
+        transform: translateX(4px);
+    }
+</style>
 {% endblock %}
 
-{% block scripts %}
+{% block content %}
+<!-- Fondo cósmico animado -->
+<div class="cosmic-bg" id="cosmicBackground"></div>
+
+<div class="content-wrapper">
+    <div class="max-w-3xl mx-auto px-4 py-8">
+        <!-- Advertencia para usuarios no autenticados -->
+        {% if not user.is_authenticated %}
+        <div class="bg-yellow-900/20 border-l-4 border-yellow-400 p-3 mb-6 rounded-lg flex items-start text-yellow-200">
+            <i class="fas fa-exclamation-circle text-yellow-400 mr-2 mt-0.5"></i>
+            <p class="text-sm">
+                <strong>Límite:</strong> Máximo 3 cálculos en modo anónimo. 
+                <a href="{% url 'register' %}" class="font-medium underline hover:text-yellow-300">Regístrate</a> para guardar tu historial.
+            </p>
+        </div>
+        {% endif %}
+
+        <div class="bg-gray-800/70 rounded-xl shadow-lg overflow-hidden border border-gray-700 backdrop-blur-sm">
+            <div class="bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-4">
+                <h2 class="text-2xl font-bold text-white text-center">Programación Lineal</h2>
+                <p class="text-blue-100 text-center">Optimización de funciones lineales</p>
+            </div>
+            
+            <div class="px-6 py-8">
+                <form method="post" class="space-y-6" id="calculation-form" novalidate>
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div class="bg-red-900/30 border-l-4 border-red-500 p-4 text-red-200">
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Función Objetivo -->
+                    <div>
+                        <label for="{{ form.objetivo.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1">
+                            Función Objetivo <span class="text-red-400">*</span>
+                        </label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            {{ form.objetivo }}
+                        </div>
+                        <p class="mt-1 text-xs text-gray-400">{{ form.objetivo.help_text }}</p>
+                        {% for error in form.objetivo.errors %}
+                            <p class="mt-1 text-sm text-red-400">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Tipo de Optimización -->
+                        <div>
+                            <label for="{{ form.tipo_optimizacion.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1">
+                                Tipo de Optimización <span class="text-red-400">*</span>
+                            </label>
+                            <div class="mt-1">
+                                {{ form.tipo_optimizacion }}
+                            </div>
+                            {% for error in form.tipo_optimizacion.errors %}
+                                <p class="mt-1 text-sm text-red-400">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Variables de Decisión -->
+                        <div>
+                            <label for="{{ form.variables_decision.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1">
+                                Número de Variables <span class="text-red-400">*</span>
+                            </label>
+                            <div class="mt-1">
+                                {{ form.variables_decision }}
+                            </div>
+                            <p class="mt-1 text-xs text-gray-400">{{ form.variables_decision.help_text }}</p>
+                            {% for error in form.variables_decision.errors %}
+                                <p class="mt-1 text-sm text-red-400">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Restricciones -->
+                    <div>
+                        <label for="{{ form.restricciones.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1">
+                            Restricciones <span class="text-red-400">*</span>
+                        </label>
+                        <div class="mt-1">
+                            {{ form.restricciones }}
+                        </div>
+                        <p class="mt-1 text-xs text-gray-400">{{ form.restricciones.help_text }}</p>
+                        {% for error in form.restricciones.errors %}
+                            <p class="mt-1 text-sm text-red-400">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Configuraciones Avanzadas -->
+                    <div class="pt-2">
+                        <button type="button" @click="advancedOpen = !advancedOpen" 
+                                class="flex items-center text-purple-300 hover:text-purple-100 text-sm font-medium">
+                            <span>Configuraciones Avanzadas</span>
+                            <svg :class="{'rotate-180': advancedOpen}" class="ml-2 h-5 w-5 transform transition-transform" 
+                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        
+                        <div x-show="advancedOpen" x-transition class="mt-4 space-y-6 border-t border-gray-700 pt-4">
+                            <!-- Tolerancia -->
+                            <div>
+                                <label for="{{ form.tolerancia.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1">
+                                    Tolerancia
+                                </label>
+                                <div class="mt-1">
+                                    {{ form.tolerancia }}
+                                </div>
+                                <p class="mt-1 text-xs text-gray-400">{{ form.tolerancia.help_text }}</p>
+                                {% for error in form.tolerancia.errors %}
+                                    <p class="mt-1 text-sm text-red-400">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            
+                            <!-- Máximo de Iteraciones -->
+                            <div>
+                                <label for="{{ form.max_iteraciones.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1">
+                                    Máximo de Iteraciones
+                                </label>
+                                <div class="mt-1">
+                                    {{ form.max_iteraciones }}
+                                </div>
+                                <p class="mt-1 text-xs text-gray-400">{{ form.max_iteraciones.help_text }}</p>
+                                {% for error in form.max_iteraciones.errors %}
+                                    <p class="mt-1 text-sm text-red-400">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-4">
+                        <button type="submit" 
+                                class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all">
+                            <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                            Resolver Problema
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Panel de ayuda -->
+        <div class="bg-gray-800/70 rounded-xl shadow-lg overflow-hidden border border-gray-700 backdrop-blur-sm mt-6">
+            <div class="bg-gray-900 text-white px-6 py-4 border-b border-gray-700">
+                <h3 class="text-lg font-semibold flex items-center">
+                    <i class="fas fa-question-circle mr-2 text-purple-400"></i> Ejemplos
+                </h3>
+            </div>
+            <div class="p-6">
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-medium text-gray-300 mb-2">Problema de Producción</h4>
+                        <button type="button" class="example-btn text-left w-full text-sm text-purple-300 hover:text-purple-100 hover:underline" 
+                                data-objetivo="3x1 + 5x2"
+                                data-tipo="maximizar"
+                                data-variables="2"
+                                data-restricciones="x1 ≤ 4\n2x2 ≤ 12\n3x1 + 2x2 ≤ 18">
+                            Maximizar Z = 3x₁ + 5x₂<br>
+                            Sujeto a:<br>
+                            • x₁ ≤ 4<br>
+                            • 2x₂ ≤ 12<br>
+                            • 3x₁ + 2x₂ ≤ 18
+                        </button>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium text-gray-300 mb-2">Problema de Dieta</h4>
+                        <button type="button" class="example-btn text-left w-full text-sm text-purple-300 hover:text-purple-100 hover:underline" 
+                                data-objetivo="0.6x1 + x2"
+                                data-tipo="minimizar"
+                                data-variables="2"
+                                data-restricciones="10x1 + 4x2 ≥ 20\n5x1 + 5x2 ≥ 20\n2x1 + 6x2 ≥ 12">
+                            Minimizar Z = 0.6x₁ + x₂<br>
+                            Sujeto a:<br>
+                            • 10x₁ + 4x₂ ≥ 20<br>
+                            • 5x₁ + 5x₂ ≥ 20<br>
+                            • 2x₁ + 6x₂ ≥ 12
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para el fondo cósmico animado -->
 <script>
-document.addEventListener('alpine:init', () => {
-  Alpine.data('form', () => ({
-    advancedOpen: false,
-    examples: [
-      {name: 'Ejemplo 2D', value: '3x1 + 2x2'},
-      {name: 'Ejemplo 3D', value: '2x1 + 4x2 - 3x3'}
-    ],
-    insertExample(example) {
-      document.getElementById('{{ form.objetivo.id_for_label }}').value = example;
-    }
-  }));
-  
-  // Validación en tiempo real
-  const objetivoInput = document.getElementById('{{ form.objetivo.id_for_label }}');
-  objetivoInput.addEventListener('input', function() {
-    this.value = this.value.replace(/[^0-9xX\+\-\*\/\.\s]/g, '');
-  });
-});
+    document.addEventListener('DOMContentLoaded', function() {
+        // Crear fondo cósmico
+        const cosmicBg = document.getElementById('cosmicBackground');
+        
+        // Crear nebulosas
+        const colors = ['rgba(139, 92, 246, 0.15)', 'rgba(59, 130, 246, 0.15)', 'rgba(236, 72, 153, 0.15)'];
+        for (let i = 0; i < 3; i++) {
+            const nebula = document.createElement('div');
+            nebula.className = 'cosmic-nebula';
+            nebula.style.background = colors[i];
+            nebula.style.width = `${Math.random() * 400 + 200}px`;
+            nebula.style.height = nebula.style.width;
+            nebula.style.left = `${Math.random() * 100}%`;
+            nebula.style.top = `${Math.random() * 100}%`;
+            cosmicBg.appendChild(nebula);
+            
+            // Animación nebulosa
+            animateNebula(nebula);
+        }
+        
+        // Crear partículas estelares
+        for (let i = 0; i < 100; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'cosmic-particle';
+            particle.style.width = `${Math.random() * 3 + 1}px`;
+            particle.style.height = particle.style.width;
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 100}%`;
+            particle.style.opacity = Math.random() * 0.5 + 0.1;
+            cosmicBg.appendChild(particle);
+            
+            // Animación partícula
+            animateParticle(particle);
+        }
+        
+        function animateNebula(element) {
+            let x = parseFloat(element.style.left);
+            let y = parseFloat(element.style.top);
+            let xSpeed = (Math.random() - 0.5) * 0.02;
+            let ySpeed = (Math.random() - 0.5) * 0.02;
+            
+            function move() {
+                x += xSpeed;
+                y += ySpeed;
+                
+                // Rebotar en los bordes
+                if (x < -20 || x > 100) xSpeed *= -1;
+                if (y < -20 || y > 100) ySpeed *= -1;
+                
+                element.style.left = `${x}%`;
+                element.style.top = `${y}%`;
+                
+                requestAnimationFrame(move);
+            }
+            
+            move();
+        }
+        
+        function animateParticle(element) {
+            let x = parseFloat(element.style.left);
+            let y = parseFloat(element.style.top);
+            let xSpeed = (Math.random() - 0.5) * 0.1;
+            let ySpeed = (Math.random() - 0.5) * 0.1;
+            let opacityDirection = Math.random() > 0.5 ? 0.01 : -0.01;
+            
+            function move() {
+                x += xSpeed;
+                y += ySpeed;
+                
+                // Rebotar en los bordes
+                if (x < 0 || x > 100) xSpeed *= -1;
+                if (y < 0 || y > 100) ySpeed *= -1;
+                
+                // Cambiar opacidad
+                let opacity = parseFloat(element.style.opacity);
+                opacity += opacityDirection;
+                if (opacity <= 0.1 || opacity >= 0.6) opacityDirection *= -1;
+                
+                element.style.left = `${x}%`;
+                element.style.top = `${y}%`;
+                element.style.opacity = opacity;
+                
+                requestAnimationFrame(move);
+            }
+            
+            move();
+        }
+        
+        // Configurar botones de ejemplo
+        document.querySelectorAll('.example-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Insertar valores
+                document.getElementById('id_objetivo').value = this.getAttribute('data-objetivo');
+                document.getElementById('id_tipo_optimizacion').value = this.getAttribute('data-tipo');
+                document.getElementById('id_variables_decision').value = this.getAttribute('data-variables');
+                document.getElementById('id_restricciones').value = this.getAttribute('data-restricciones');
+                
+                // Efecto visual
+                this.classList.add('text-purple-100');
+                setTimeout(() => {
+                    this.classList.remove('text-purple-100');
+                }, 300);
+            });
+        });
+
+        // Validación en tiempo real para función objetivo
+        const objetivoInput = document.getElementById('id_objetivo');
+        if (objetivoInput) {
+            objetivoInput.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9xX\+\-\*\/\.\s]/g, '');
+            });
+        }
+
+        // Validación del formulario al enviar
+        document.getElementById('calculation-form')?.addEventListener('submit', function(e) {
+            let isValid = true;
+            
+            // Validar función objetivo
+            if (!document.getElementById('id_objetivo').value.trim()) {
+                document.getElementById('id_objetivo').classList.add('border-red-500');
+                isValid = false;
+            }
+            
+            // Validar restricciones
+            if (!document.getElementById('id_restricciones').value.trim()) {
+                document.getElementById('id_restricciones').classList.add('border-red-500');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+                alert('Por favor completa todos los campos requeridos');
+            }
+        });
+    });
+
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('form', () => ({
+            advancedOpen: false
+        }));
+    });
 </script>
 {% endblock %}

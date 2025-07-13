@@ -1,0 +1,450 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nuevo Cálculo - Gauss-Jordan Económico{% endblock %}
+
+{% block extra_head %}
+<style>
+    input, textarea, select {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #4b5563;
+        border-radius: 0.375rem;
+        background-color: rgba(31, 41, 55, 0.7);
+        color: #f3f4f6;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        transition: all 0.2s ease-in-out;
+    }
+
+    textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    input:focus, textarea:focus, select:focus {
+        outline: none;
+        border-color: #8b5cf6;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3);
+        background-color: rgba(31, 41, 55, 0.9);
+    }
+
+    .error input, .error select, .error textarea {
+        border-color: #ef4444;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+    }
+    
+    /* Estilos para el fondo cósmico */
+    .cosmic-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+    }
+    
+    .cosmic-particle {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.5);
+    }
+    
+    .cosmic-nebula {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(60px);
+        opacity: 0.15;
+    }
+    
+    .content-wrapper {
+        position: relative;
+        z-index: 1;
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(10px);
+        min-height: 100vh;
+    }
+    
+    /* Estilos para los botones de ejemplo */
+    .example-btn {
+        transition: all 0.2s ease;
+    }
+    
+    .example-btn:hover {
+        transform: translateX(4px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Fondo cósmico animado -->
+<div class="cosmic-bg" id="cosmicBackground"></div>
+
+<div class="content-wrapper">
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Advertencia para usuarios no autenticados -->
+        {% if not user.is_authenticated %}
+        <div class="bg-yellow-900/20 border-l-4 border-yellow-400 p-3 mb-6 rounded-lg flex items-start text-yellow-200">
+            <i class="fas fa-exclamation-circle text-yellow-400 mr-2 mt-0.5"></i>
+            <p class="text-sm">
+                <strong>Límite:</strong> Máximo 3 cálculos en modo anónimo. 
+                <a href="{% url 'register' %}" class="font-medium underline hover:text-yellow-300">Regístrate</a> para guardar tu historial.
+            </p>
+        </div>
+        {% endif %}
+
+        <div class="flex flex-col md:flex-row gap-8">
+            <!-- Formulario principal -->
+            <div class="md:w-2/3">
+                <div class="bg-gray-800/70 rounded-xl shadow-lg overflow-hidden border border-gray-700 backdrop-blur-sm">
+                    <div class="bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-4">
+                        <h2 class="text-2xl font-bold text-white">Gauss-Jordan para Análisis Económico</h2>
+                        <p class="text-blue-100">Resuelve problemas de inversión, producción y distribución</p>
+                    </div>
+
+                    <form method="post" class="p-6 space-y-6" id="calculation-form">
+                        {% csrf_token %}
+
+                        <!-- Descripción del problema -->
+                        <div>
+                            <label for="{{ form.problema.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1">
+                                Descripción del problema económico <span class="text-red-400">*</span>
+                            </label>
+                            {{ form.problema }}
+                            {% if form.problema.errors %}
+                                <div class="mt-1 text-sm text-red-400">
+                                    {{ form.problema.errors }}
+                                </div>
+                            {% endif %}
+                            <p class="mt-1 text-xs text-gray-400">Ej: Inversión en bonos con diferentes tasas de interés</p>
+                        </div>
+                        
+                        <!-- Matriz A (Coeficientes) -->
+                        <div>
+                            <label for="{{ form.matriz_a.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1">
+                                Coeficientes del sistema (A) <span class="text-red-400">*</span>
+                            </label>
+                            {{ form.matriz_a }}
+                            <div class="flex justify-between">
+                                <p class="mt-1 text-xs text-gray-400">
+                                    Formato JSON: [[a11, a12,...], [a21, a22,...], ...]
+                                </p>
+                                <button type="button" id="validate-matrix" class="text-xs text-purple-300 hover:text-purple-100 hover:underline focus:outline-none">
+                                    Validar matriz
+                                </button>
+                            </div>
+                            {% if form.matriz_a.errors %}
+                                <div class="mt-1 text-sm text-red-400">
+                                    {{ form.matriz_a.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Vector b (Términos independientes) -->
+                        <div>
+                            <label for="{{ form.vector_b.id_for_label }}" class="block text-sm font-medium text-gray-300 mb-1">
+                                Términos independientes (b) <span class="text-red-400">*</span>
+                            </label>
+                            {{ form.vector_b }}
+                            <p class="mt-1 text-xs text-gray-400">
+                                Formato JSON: [b1, b2, b3,...]
+                            </p>
+                            {% if form.vector_b.errors %}
+                                <div class="mt-1 text-sm text-red-400">
+                                    {{ form.vector_b.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="flex justify-between pt-6 border-t border-gray-700">
+                            <a href="{% url 'list_gauss_jordan' %}" class="px-4 py-2 border border-gray-600 rounded-md text-gray-300 bg-gray-700 hover:bg-gray-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors">
+                                <i class="fas fa-arrow-left mr-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="px-6 py-2 border border-transparent rounded-md shadow-sm text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all">
+                                <i class="fas fa-chart-line mr-2"></i>Analizar Problema
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Panel de ayuda -->
+            <div class="md:w-1/3">
+                <div class="bg-gray-800/70 rounded-xl shadow-lg overflow-hidden border border-gray-700 backdrop-blur-sm sticky top-4">
+                    <div class="bg-gray-900 text-white px-6 py-4 border-b border-gray-700">
+                        <h3 class="text-lg font-semibold flex items-center">
+                            <i class="fas fa-lightbulb mr-2 text-purple-400"></i> Ejemplos Económicos
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-6">
+                            <!-- Ejemplos económicos -->
+                            <div>
+                                <h4 class="font-medium text-gray-300 mb-3">Casos Prácticos</h4>
+                                <ul class="space-y-3">
+                                    <li>
+                                        <button type="button" class="example-btn text-left w-full text-sm text-purple-300 hover:text-purple-100 hover:underline" 
+                                                data-problema="Inversión en 2 bonos: total $12,000, intereses 10.5% y 12%. Interés total anual: $1,335"
+                                                data-matrix="[[1, 1], [0.105, 0.12]]" 
+                                                data-vector="[12000, 1335]">
+                                            Inversión en bonos (2 variables)
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button" class="example-btn text-left w-full text-sm text-purple-300 hover:text-purple-100 hover:underline" 
+                                                data-problema="Inversión en 3 cuentas: total $10,000, intereses 5%, 8% y 9%. Interés total: $770. Inversión al 9% es doble que al 5%"
+                                                data-matrix="[[1, 1, 1], [0.05, 0.08, 0.09], [1, 0, -2]]" 
+                                                data-vector="[10000, 770, 0]">
+                                            Inversión en cuentas (3 variables)
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button" class="example-btn text-left w-full text-sm text-purple-300 hover:text-purple-100 hover:underline" 
+                                                data-problema="Producción de 3 productos con costos de materiales A, B y C diferentes"
+                                                data-matrix="[[2, 3, 1], [4, 1, 2], [3, 2, 2]]" 
+                                                data-vector="[850, 800, 900]">
+                                            Optimización de producción
+                                        </button>
+                                    </li>
+                                </ul>
+                                <hr class="my-4 border-gray-700">
+                            </div>
+                            
+                            <!-- Guía Rápida -->
+                            <div>
+                                <h4 class="font-medium text-gray-300 mb-3">Cómo Plantear Problemas</h4>
+                                <ol class="space-y-3 text-sm text-gray-400">
+                                    <li class="flex items-start">
+                                        <span class="bg-purple-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 flex-shrink-0">1</span>
+                                        <span>Identifica las variables (ej: inversión en cada producto)</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="bg-purple-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 flex-shrink-0">2</span>
+                                        <span>Establece ecuaciones para restricciones (total invertido)</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="bg-purple-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2 flex-shrink-0">3</span>
+                                        <span>Agrega ecuaciones para rendimientos o relaciones entre variables</span>
+                                    </li>
+                                </ol>
+                            </div>
+                            
+                            <!-- Validación -->
+                            <div id="validation-result" class="hidden">
+                                <h4 class="font-medium text-gray-300 mb-3">Validación</h4>
+                                <div class="p-3 rounded-lg bg-green-900/30 text-sm text-green-200 border border-green-800 flex items-start">
+                                    <i class="fas fa-check-circle mr-2 mt-0.5 text-green-400"></i>
+                                    <span id="validation-message">Los datos son válidos</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Aplicaciones -->
+                            <div>
+                                <h4 class="font-medium text-gray-300 mb-3">Aplicaciones Económicas</h4>
+                                <ul class="text-sm text-gray-400 space-y-2">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-coins mr-2 mt-0.5 text-purple-400"></i>
+                                        <span>Distribución óptima de inversiones</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-industry mr-2 mt-0.5 text-purple-400"></i>
+                                        <span>Optimización de producción</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-balance-scale mr-2 mt-0.5 text-purple-400"></i>
+                                        <span>Análisis de costos y precios</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-chart-pie mr-2 mt-0.5 text-purple-400"></i>
+                                        <span>Distribución de recursos</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Mensaje para usuarios no autenticados -->
+                            {% if not user.is_authenticated %}
+                            <div class="p-3 rounded-lg bg-blue-900/30 text-sm text-blue-200 border border-blue-800">
+                                <div class="flex items-start">
+                                    <i class="fas fa-info-circle mr-2 mt-0.5 text-blue-400"></i>
+                                    <div>
+                                        <p>Regístrate para:</p>
+                                        <ul class="list-disc list-inside mt-1">
+                                            <li>Guardar análisis históricos</li>
+                                            <li>Comparar diferentes escenarios</li>
+                                            <li>Exportar reportes financieros</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para el fondo cósmico animado -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Crear fondo cósmico
+        const cosmicBg = document.getElementById('cosmicBackground');
+        
+        // Crear nebulosas
+        const colors = ['rgba(139, 92, 246, 0.15)', 'rgba(59, 130, 246, 0.15)', 'rgba(236, 72, 153, 0.15)'];
+        for (let i = 0; i < 3; i++) {
+            const nebula = document.createElement('div');
+            nebula.className = 'cosmic-nebula';
+            nebula.style.background = colors[i];
+            nebula.style.width = `${Math.random() * 400 + 200}px`;
+            nebula.style.height = nebula.style.width;
+            nebula.style.left = `${Math.random() * 100}%`;
+            nebula.style.top = `${Math.random() * 100}%`;
+            cosmicBg.appendChild(nebula);
+            
+            // Animación nebulosa
+            animateNebula(nebula);
+        }
+        
+        // Crear partículas estelares
+        for (let i = 0; i < 100; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'cosmic-particle';
+            particle.style.width = `${Math.random() * 3 + 1}px`;
+            particle.style.height = particle.style.width;
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 100}%`;
+            particle.style.opacity = Math.random() * 0.5 + 0.1;
+            cosmicBg.appendChild(particle);
+            
+            // Animación partícula
+            animateParticle(particle);
+        }
+        
+        function animateNebula(element) {
+            let x = parseFloat(element.style.left);
+            let y = parseFloat(element.style.top);
+            let xSpeed = (Math.random() - 0.5) * 0.02;
+            let ySpeed = (Math.random() - 0.5) * 0.02;
+            
+            function move() {
+                x += xSpeed;
+                y += ySpeed;
+                
+                // Rebotar en los bordes
+                if (x < -20 || x > 100) xSpeed *= -1;
+                if (y < -20 || y > 100) ySpeed *= -1;
+                
+                element.style.left = `${x}%`;
+                element.style.top = `${y}%`;
+                
+                requestAnimationFrame(move);
+            }
+            
+            move();
+        }
+        
+        function animateParticle(element) {
+            let x = parseFloat(element.style.left);
+            let y = parseFloat(element.style.top);
+            let xSpeed = (Math.random() - 0.5) * 0.1;
+            let ySpeed = (Math.random() - 0.5) * 0.1;
+            let opacityDirection = Math.random() > 0.5 ? 0.01 : -0.01;
+            
+            function move() {
+                x += xSpeed;
+                y += ySpeed;
+                
+                // Rebotar en los bordes
+                if (x < 0 || x > 100) xSpeed *= -1;
+                if (y < 0 || y > 100) ySpeed *= -1;
+                
+                // Cambiar opacidad
+                let opacity = parseFloat(element.style.opacity);
+                opacity += opacityDirection;
+                if (opacity <= 0.1 || opacity >= 0.6) opacityDirection *= -1;
+                
+                element.style.left = `${x}%`;
+                element.style.top = `${y}%`;
+                element.style.opacity = opacity;
+                
+                requestAnimationFrame(move);
+            }
+            
+            move();
+        }
+        
+        // Configurar botones de ejemplo
+        document.querySelectorAll('.example-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Insertar valores
+                document.getElementById('id_problema').value = this.getAttribute('data-problema');
+                document.getElementById('id_matriz_a').value = this.getAttribute('data-matrix');
+                document.getElementById('id_vector_b').value = this.getAttribute('data-vector');
+                
+                // Mostrar mensaje de ejemplo cargado
+                const validationDiv = document.getElementById('validation-result');
+                const message = document.getElementById('validation-message');
+                
+                message.textContent = "Ejemplo cargado correctamente";
+                validationDiv.classList.remove('hidden');
+                validationDiv.classList.add('bg-blue-900/30', 'text-blue-200');
+                validationDiv.classList.remove('bg-green-900/30', 'text-green-200', 'bg-red-900/30', 'text-red-200');
+                
+                setTimeout(() => {
+                    validationDiv.classList.add('hidden');
+                }, 3000);
+            });
+        });
+        
+        // Validación de matriz
+        document.getElementById('validate-matrix')?.addEventListener('click', function() {
+            try {
+                const matrixText = document.getElementById('id_matriz_a').value;
+                const vectorText = document.getElementById('id_vector_b').value;
+                
+                if (!matrixText || !vectorText) {
+                    throw new Error("Debes completar ambos campos");
+                }
+                
+                const matrix = JSON.parse(matrixText);
+                const vector = JSON.parse(vectorText);
+                
+                if (!Array.isArray(matrix) || !matrix.every(row => Array.isArray(row))) {
+                    throw new Error("La matriz debe ser un arreglo de arreglos");
+                }
+                
+                if (!Array.isArray(vector)) {
+                    throw new Error("El vector debe ser un arreglo");
+                }
+                
+                if (matrix.length !== vector.length) {
+                    throw new Error("El número de filas de la matriz debe coincidir con el tamaño del vector");
+                }
+                
+                // Mostrar mensaje de éxito
+                const validationDiv = document.getElementById('validation-result');
+                const message = document.getElementById('validation-message');
+                
+                message.textContent = "✅ Los datos son válidos. Puedes resolver el sistema.";
+                validationDiv.classList.remove('hidden');
+                validationDiv.classList.add('bg-green-900/30', 'text-green-200');
+                validationDiv.classList.remove('bg-red-900/30', 'text-red-200', 'bg-blue-900/30', 'text-blue-200');
+                
+            } catch (error) {
+                const validationDiv = document.getElementById('validation-result');
+                const message = document.getElementById('validation-message');
+                
+                message.textContent = "❌ Error: " + error.message;
+                validationDiv.classList.remove('hidden');
+                validationDiv.classList.add('bg-red-900/30', 'text-red-200');
+                validationDiv.classList.remove('bg-green-900/30', 'text-green-200', 'bg-blue-900/30', 'text-blue-200');
+            }
+        });
+    });
+</script>
+{% endblock %}

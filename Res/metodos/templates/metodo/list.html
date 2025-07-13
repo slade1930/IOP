@@ -1,0 +1,415 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-4 sm:mb-0">Historial de Falsa Posición</h1>
+      <a href="{% url 'add_falsa_posicion' %}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+        </svg>
+        Nuevo Cálculo
+      </a>
+    </div>
+    
+    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+      {% if resultados %}
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Función</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Intervalo</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+              <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            {% for item in resultados %}
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900">{{ item.funcion|truncatechars:30 }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-500">[{{ item.x0 }}, {{ item.x1 }}]</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                  {% if item.resultado %}bg-green-100 text-green-800
+                  {% else %}bg-red-100 text-red-800{% endif %}">
+                  {% if item.resultado %}Completado{% else %}Fallido{% endif %}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {{ item.creado|date:"d/m/Y H:i" }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <div class="flex justify-end space-x-2">
+                  <!-- Botón para mostrar detalles -->
+                  <button onclick="toggleDetails('details-{{ item.id }}')" class="text-blue-600 hover:text-blue-900" title="Ver detalles">
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                      <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  
+                  <!-- Botón para mostrar gráfica -->
+                  {% if item.grafico_base64 %}
+                  <button onclick="showGraph('{{ item.grafico_base64 }}')" class="text-purple-600 hover:text-purple-900" title="Ver gráfica">
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                    </svg>
+                  </button>
+                  {% endif %}
+                  
+                  <!-- Botón de eliminar -->
+                  <form action="{% url 'delete_falsa_posicion' item.pk %}" method="post" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="text-red-600 hover:text-red-900" title="Eliminar" onclick="return confirm('¿Estás seguro de que quieres eliminar este cálculo?')">
+                      <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            
+            <!-- Fila de detalles desplegable -->
+            <tr id="details-{{ item.id }}" class="hidden">
+              <td colspan="5" class="px-6 py-4 bg-gray-50">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 class="font-medium text-gray-700 mb-2">Detalles del cálculo</h4>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                      <li><span class="font-medium">Función:</span> <code>{{ item.funcion }}</code></li>
+                      <li><span class="font-medium">Intervalo:</span> [{{ item.x0 }}, {{ item.x1 }}]</li>
+                      <li><span class="font-medium">Tolerancia:</span> {{ item.tolerancia }}</li>
+                      <li><span class="font-medium">Iteraciones máx:</span> {{ item.max_iteraciones }}</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 class="font-medium text-gray-700 mb-2">Resultado</h4>
+                    {% if item.resultado %}
+                      {% with last_line=item.resultado.splitlines|last %}
+                      <p class="text-sm"><span class="font-medium">Raíz aproximada:</span> {{ last_line|cut:"Raíz aproximada encontrada: " }}</p>
+                      {% endwith %}
+                      <p class="text-sm"><span class="font-medium">Iteraciones:</span> {{ item.resultado.splitlines|length|add:"-1" }}</p>
+                    {% else %}
+                      <p class="text-sm text-red-600">No se pudo completar el cálculo</p>
+                    {% endif %}
+                  </div>
+                </div>
+                
+                <div class="mt-4">
+                  <h4 class="font-medium text-gray-700 mb-2">Proceso detallado</h4>
+                  {% if item.resultado %}
+                    <div class="bg-gray-800 text-gray-100 p-3 rounded overflow-x-auto">
+                      <pre class="text-sm whitespace-pre-wrap font-mono">{{ item.resultado }}</pre>
+                    </div>
+                  {% else %}
+                    <p class="text-sm text-gray-500">No hay detalles disponibles</p>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Paginación -->
+      {% if is_paginated %}
+      <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+          <div>
+            <p class="text-sm text-gray-700">
+              Mostrando <span class="font-medium">{{ page_obj.start_index }}</span> a 
+              <span class="font-medium">{{ page_obj.end_index }}</span> de 
+              <span class="font-medium">{{ page_obj.paginator.count }}</span> resultados
+            </p>
+          </div>
+          <div>
+            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+              {% if page_obj.has_previous %}
+              <a href="?page=1" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                <span class="sr-only">Primera</span>
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              </a>
+              <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                Anterior
+              </a>
+              {% endif %}
+              
+              {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <a href="?page={{ num }}" aria-current="page" class="z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                  {{ num }}
+                </a>
+                {% else %}
+                <a href="?page={{ num }}" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                  {{ num }}
+                </a>
+                {% endif %}
+              {% endfor %}
+              
+              {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                Siguiente
+              </a>
+              <a href="?page={{ page_obj.paginator.num_pages }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                <span class="sr-only">Última</span>
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+              </a>
+              {% endif %}
+            </nav>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      
+      {% else %}
+      <div class="text-center py-12">
+        <svg class="mx-auto h-24 w-24 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <h3 class="mt-2 text-lg font-medium text-gray-900">No hay cálculos</h3>
+        <p class="mt-1 text-sm text-gray-500">Comienza creando tu primer cálculo de falsa posición.</p>
+        <div class="mt-6">
+          <a href="{% url 'add_falsa_posicion' %}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            Nuevo Cálculo
+          </a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Modal para gráfica -->
+<div id="graph-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+  <div class="bg-white rounded-lg p-6 max-w-4xl w-full">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-semibold">Gráfica del Método</h3>
+      <button onclick="closeGraph()" class="text-gray-500 hover:text-gray-700">
+        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="flex justify-center">
+      <img id="graph-image" src="" alt="Gráfica del método" class="max-w-full max-h-[70vh]">
+    </div>
+  </div>
+</div>
+
+<!-- Elemento oculto para almacenar el ID del método -->
+{% if object %}
+<div data-metodo-id="{{ object.id }}" class="hidden"></div>
+{% endif %}
+
+<!-- Chatbot Container -->
+<div id="chatbot-container" class="fixed bottom-6 right-6 z-50 hidden">
+  <div class="bg-white rounded-lg shadow-xl border border-gray-200 w-96 flex flex-col" style="height: 500px;">
+    <div class="bg-blue-600 text-white px-4 py-3 rounded-t-lg flex justify-between items-center">
+      <h3 class="font-semibold">Asistente de Falsa Posición</h3>
+      <button id="close-chatbot" class="text-white hover:text-gray-200">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+    
+    <div id="chatbot-messages" class="flex-1 p-4 overflow-y-auto space-y-2">
+      <div class="bg-blue-100 rounded-lg p-3 text-sm">
+        ¡Hola! Soy tu asistente especializado en el método de Falsa Posición. ¿En qué puedo ayudarte hoy?
+      </div>
+    </div>
+    
+    <div class="border-t border-gray-200 p-3">
+      <div class="flex space-x-2">
+        <input id="chatbot-input" type="text" placeholder="Escribe tu pregunta..." 
+               class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        <button id="chatbot-send" class="bg-blue-600 text-white rounded-lg px-4 py-2 hover:bg-blue-700">
+          Enviar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Botón para abrir el chatbot -->
+<button id="open-chatbot" class="fixed bottom-6 right-6 bg-blue-600 text-white rounded-full p-4 shadow-lg hover:bg-blue-700 transition-all z-40">
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+  </svg>
+</button>
+
+<script>
+// Función para mostrar/ocultar detalles
+function toggleDetails(id) {
+  const element = document.getElementById(id);
+  element.classList.toggle('hidden');
+}
+
+// Función para mostrar gráfica en modal
+function showGraph(graphData) {
+  const modal = document.getElementById('graph-modal');
+  const img = document.getElementById('graph-image');
+  img.src = 'data:image/png;base64,' + graphData;
+  modal.classList.remove('hidden');
+}
+
+// Función para cerrar modal de gráfica
+function closeGraph() {
+  document.getElementById('graph-modal').classList.add('hidden');
+}
+
+// Funciones del chatbot
+document.addEventListener('DOMContentLoaded', function() {
+  const chatbotContainer = document.getElementById('chatbot-container');
+  const openChatbot = document.getElementById('open-chatbot');
+  const closeChatbot = document.getElementById('close-chatbot');
+  const chatbotMessages = document.getElementById('chatbot-messages');
+  const chatbotInput = document.getElementById('chatbot-input');
+  const chatbotSend = document.getElementById('chatbot-send');
+
+  // Mostrar/ocultar chatbot
+  openChatbot.addEventListener('click', function() {
+    chatbotContainer.classList.remove('hidden');
+    openChatbot.classList.add('hidden');
+  });
+  
+  closeChatbot.addEventListener('click', function() {
+    chatbotContainer.classList.add('hidden');
+    openChatbot.classList.remove('hidden');
+  });
+
+  // Función para agregar mensajes al chat
+  function addMessage(text, sender) {
+    const messageDiv = document.createElement('div');
+    
+    if (sender === 'user') {
+      messageDiv.className = 'flex justify-end';
+      messageDiv.innerHTML = `
+        <div class="bg-blue-600 text-white rounded-lg p-3 text-sm max-w-xs">
+          ${text}
+        </div>
+      `;
+    } else {
+      messageDiv.className = 'flex justify-start';
+      messageDiv.innerHTML = `
+        <div class="bg-gray-100 rounded-lg p-3 text-sm max-w-xs">
+          ${text}
+        </div>
+      `;
+    }
+    
+    chatbotMessages.appendChild(messageDiv);
+    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+  }
+
+  // Función para obtener el token CSRF
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  // Función para enviar mensajes
+  async function sendMessage() {
+    const message = chatbotInput.value.trim();
+    if (!message) return;
+
+    // Agregar mensaje del usuario
+    addMessage(message, 'user');
+    chatbotInput.value = '';
+    
+    // Mostrar "pensando..."
+    const thinkingDiv = document.createElement('div');
+    thinkingDiv.className = 'flex justify-start';
+    thinkingDiv.innerHTML = `
+      <div class="bg-gray-100 rounded-lg p-3 text-sm text-gray-600">
+        <div class="flex space-x-1">
+          <div class="w-2 h-2 rounded-full bg-gray-400 animate-bounce"></div>
+          <div class="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style="animation-delay: 0.2s"></div>
+          <div class="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style="animation-delay: 0.4s"></div>
+        </div>
+      </div>
+    `;
+    chatbotMessages.appendChild(thinkingDiv);
+    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    
+    try {
+      // Enviar al backend
+      const response = await fetch('{% url "falsa_posicion_chatbot" %}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+          pregunta: message,
+          metodo: 'falsa_posicion'
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      // Eliminar "pensando..."
+      chatbotMessages.removeChild(thinkingDiv);
+      
+      // Verificar si hay respuesta válida
+      if (data.respuesta) {
+        addMessage(data.respuesta, 'bot');
+      } else if (data.error) {
+        addMessage(`Error: ${data.error}`, 'bot');
+      } else {
+        addMessage('No se recibió una respuesta válida del servidor', 'bot');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      const errorMessages = document.querySelectorAll('#chatbot-messages div');
+      const lastMessage = errorMessages[errorMessages.length - 1];
+      
+      if (lastMessage && lastMessage.textContent.includes('Pensando...')) {
+        chatbotMessages.removeChild(lastMessage);
+      }
+      addMessage('Error al conectar con el servidor. Por favor intenta nuevamente.', 'bot');
+    }
+  }
+
+  // Event listeners para el chatbot
+  chatbotSend.addEventListener('click', sendMessage);
+  chatbotInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  });
+});
+</script>
+
+{% endblock %}
